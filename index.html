@@ -194,13 +194,18 @@ select option{background:#1a3d29;}
 .hero-e{font-size:58px;line-height:1;margin-bottom:8px;}
 .hero-t{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--gold);}
 .hero-s{font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
-.hgame{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
-  padding:12px 14px;margin-bottom:10px;cursor:pointer;}
-.hgame-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;}
-.hgame-n{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-.hgame-m{font-size:13px;color:var(--dim);white-space:nowrap;flex-shrink:0;}
-.hgame-s{font-size:17px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hgame-stats{font-size:15px;font-weight:500;color:var(--gold);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px;}
+.hgame{background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+  padding:12px 14px 14px;margin-bottom:12px;cursor:pointer;}
+.hgame-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+.hgame-m{font-size:14px;font-weight:600;color:var(--dim);white-space:nowrap;}
+.hgame-tbl{width:100%;border-collapse:collapse;}
+.hgame-tbl th{font-size:15px;font-weight:700;text-align:center;padding:3px 4px 5px;
+  color:var(--cream);border-bottom:1px solid var(--dim2);white-space:nowrap;}
+.hgame-tbl th.winner{color:var(--gold);}
+.hgame-tbl td{font-size:16px;font-weight:600;text-align:center;padding:4px 4px;white-space:nowrap;}
+.hgame-tbl td.lbl{text-align:left;font-size:13px;font-weight:600;color:var(--dim);
+  text-transform:uppercase;letter-spacing:.5px;padding-right:6px;white-space:nowrap;}
+.hgame-tbl tr:not(:last-child) td{border-bottom:1px solid var(--dim2);}
 .del-hist-btn{background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);border-radius:7px;
   color:#F06060;font-size:15px;padding:4px 9px;cursor:pointer;flex-shrink:0;line-height:1;}
 .del-hist-btn:active{background:rgba(240,96,96,.3);}
@@ -689,24 +694,35 @@ function renderHome(){
     const{y100,y200,y400}=calcYuz(g);
     const sorted=sortedPlayers(t,g);
     const medals=['🥇','🥈','🥉','4.','5.'];
-    const sc=sorted.map((p,i)=>`${medals[i]||''}${p}:${t[p]}`).join(' ');
-    const stats=sorted.map(p=>{
-      const parts=[];
-      if(b[p])parts.push(`B${b[p]}`);
-      if(y100[p])parts.push(`💯${y100[p]}`);
-      if(y200[p])parts.push(`2️⃣${y200[p]}`);
-      if(y400[p])parts.push(`4️⃣${y400[p]}`);
-      if(g.asterisks[p])parts.push(`H${g.asterisks[p]}`);
-      return`${p.slice(0,3)}:${parts.join(' ')||'—'}`;
-    }).join('  ');
     const d=calcDur(g.time,g.endTime);
+
+    // Tablo satırları
+    const thRow=sorted.map((p,i)=>`<th class="${i===0?'winner':''}">${medals[i]||''}${p.slice(0,4)}</th>`).join('');
+    const sayiRow=sorted.map((p,i)=>{
+      const col=i===0?'var(--pos)':'var(--cream)';
+      return`<td style="color:${col};font-family:'Playfair Display',serif;font-size:18px">${t[p]}</td>`;
+    }).join('');
+    const bitmeRow=sorted.map(p=>`<td style="color:var(--dim)">${b[p]||'—'}</td>`).join('');
+    const yuzRow=sorted.map(p=>{
+      const cnt=(y100[p]||0)+(y200[p]||0)+(y400[p]||0);
+      return`<td style="color:var(--gold)">${cnt||'—'}</td>`;
+    }).join('');
+    const hataRow=sorted.map(p=>`<td style="color:var(--neg)">${(g.asterisks[p]||0)||'—'}</td>`).join('');
+
     return`<div class="hgame" onclick="viewHist(${HIST.length-1-ri})">
-      <div class="hgame-top"><div class="hgame-n">${g.players.join(' · ')}</div>
-        <div class="hgame-m">${g.date}${d!=='—'?' · '+d:''}</div>
+      <div class="hgame-top">
+        <div class="hgame-m">${g.date}${d!=='—'?' · '+d:''} · ${g.rounds.length} el</div>
         <button class="del-hist-btn" onclick="event.stopPropagation();askDeleteHist(${HIST.length-1-ri})" title="Oyunu Sil">🗑</button>
       </div>
-      <div class="hgame-s">${sc}</div>
-      <div class="hgame-stats">${stats}</div>
+      <table class="hgame-tbl">
+        <thead><tr><th class="lbl"></th>${thRow}</tr></thead>
+        <tbody>
+          <tr><td class="lbl">Sayı</td>${sayiRow}</tr>
+          <tr><td class="lbl">Bitme</td>${bitmeRow}</tr>
+          <tr><td class="lbl">100-400</td>${yuzRow}</tr>
+          <tr><td class="lbl">Hata</td>${hataRow}</tr>
+        </tbody>
+      </table>
     </div>`;
   }).join('');
 }
