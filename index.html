@@ -113,12 +113,12 @@ select option{background:#1a3d29;}
 .j-var{background:rgba(61,214,140,.1);border:1px solid rgba(61,214,140,.3);color:var(--pos);}
 .j-yok{background:rgba(255,255,255,.07);border:1px solid var(--bdr);color:var(--dim);}
 .oyun-nm{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;
-  color:var(--cream);flex:1;text-align:center;padding:0 2px;white-space:nowrap;
+  color:var(--cream);flex:1;text-align:left;padding:0 2px;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis;}
-.oyun-nm .dealer-inline{color:var(--gold);}
+.dbadge{font-size:17px;font-weight:700;color:var(--gold);flex-shrink:0;white-space:nowrap;}
 .rnd-reset{background:rgba(231,76,60,.12);border:1px solid rgba(240,96,96,.28);border-radius:8px;
-  color:#F06060;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
-  padding:6px 10px;cursor:pointer;flex-shrink:0;white-space:nowrap;}
+  color:#F06060;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+  padding:8px 14px;cursor:pointer;width:100%;margin-top:8px;}
 .rnd-reset:active{background:rgba(231,76,60,.25);}
 .prog{height:3px;background:rgba(255,255,255,.08);margin:3px 10px 8px;border-radius:2px;overflow:hidden;}
 .prog-f{height:100%;background:linear-gradient(90deg,var(--gold-dk),var(--gold));transition:width .5s;}
@@ -373,7 +373,7 @@ select option{background:#1a3d29;}
     <div class="jbadge j-yok" id="jbadge">Joker: YOK</div>
     <div class="rbadge" id="ver-badge" style="background:rgba(255,255,255,.07);border-color:var(--bdr);color:var(--dim)">—</div>
     <div class="oyun-nm" id="oyun-nm">—</div>
-    <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn">🗑 Sıfırla</button>
+    <div class="dbadge" id="dbadge">🃏 —</div>
   </div>
   <div class="prog"><div class="prog-f" id="prog-f" style="width:0%"></div></div>
 
@@ -394,6 +394,7 @@ select option{background:#1a3d29;}
     <div id="re-list" style="background:var(--card);margin:8px 0 0;"></div>
     <div style="padding:12px 18px 0" id="save-wrap">
       <button onclick="saveRound()" class="btn btn-g" id="save-btn">✅ Eli Kaydet</button>
+      <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn">🗑 Oyunu Sıfırla</button>
     </div>
     <div id="done-msg" class="done-msg" style="display:none">
       <div style="font-size:34px;margin-bottom:7px">🏆</div>
@@ -824,9 +825,10 @@ function renderRndHdr(){
   const isOver=(G.rounds.length>=G.totalR||G.done)&&editMode===false;
   if(isOver){
     document.getElementById('rnd-badge').textContent=`${G.totalR} El Tamam`;
-    document.getElementById('oyun-nm').innerHTML='';
+    document.getElementById('oyun-nm').textContent='';
     document.getElementById('jbadge').textContent='';
     document.getElementById('ver-badge').textContent='';
+    document.getElementById('dbadge').textContent='';
     const rb=document.getElementById('rnd-reset-btn');if(rb)rb.style.display='none';
     document.getElementById('prog-f').style.width='100%';
     return;
@@ -834,9 +836,8 @@ function renderRndHdr(){
   const rb=document.getElementById('rnd-reset-btn');if(rb)rb.style.display='';
   const i=editMode!==false?editMode:G.rounds.length;
   document.getElementById('rnd-badge').textContent=`El ${i+1} / ${G.totalR}`;
-  const dealer=dealerAt(i);
-  document.getElementById('oyun-nm').innerHTML=
-    `${oyunAt(i)}&nbsp;&nbsp;<span class="dealer-inline">🃏 ${dealer}</span>`;
+  document.getElementById('oyun-nm').textContent=oyunAt(i);
+  document.getElementById('dbadge').textContent=`🃏 ${dealerAt(i)}`;
   const j=jokerAt(i);
   const jb=document.getElementById('jbadge');
   jb.textContent=`Joker: ${j}`;jb.className=`jbadge ${j==='VAR'?'j-var':'j-yok'}`;
