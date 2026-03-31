@@ -555,35 +555,40 @@ function initFirebase(){
       if(_localWrite)return;
       const d=snap.val();
 
-      if(!d||(!d.G&&(!d.HIST||(!Array.isArray(d.HIST)&&!Object.keys(d.HIST||{}).length)||(Array.isArray(d.HIST)&&!d.HIST.length)))){
-        // Firebase boş — localStorage'da gerçek veri varsa buluta aktar
-        if(HIST.length){
-          toast('☁️ Yerel veriler buluta aktarılıyor...');
-          persist();
-        }
-        _fbReady=true;
-        renderHome();
-        return;
+      // Firebase'den gelen HIST'i normalize et
+      const fbHIST=d&&d.HIST?normalizeHIST(d.HIST):[];
+      const fbG=d&&d.G?normalizeGame(d.G):null;
+
+      // Yerel ve Firebase verilerini BİRLEŞTİR — id'ye göre, hiçbiri diğerini silmesin
+      const mergedMap={};
+      HIST.forEach(g=>{if(g&&g.id)mergedMap[g.id]=g;});
+      fbHIST.forEach(g=>{if(g&&g.id)mergedMap[g.id]=g;});
+      const merged=Object.values(mergedMap).sort((a,b)=>a.id-b.id);
+
+      // Aktif oyun: Firebase'dekini tercih et, yoksa yerelini kullan
+      const mergedG=fbG||G;
+
+      // Değişiklik var mı?
+      const histChanged=merged.length!==HIST.length||fbHIST.length!==HIST.length;
+      const gChanged=JSON.stringify(mergedG)!==JSON.stringify(G);
+
+      HIST=merged;
+      G=mergedG;
+
+      // Yerel hafızayı güncelle
+      try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+
+      // Firebase'de eksik veri varsa tamamla
+      if(histChanged||gChanged){
+        _localWrite=true;
+        _fbRef.set({G:G||null,HIST:HIST.length?HIST:[]},()=>{_localWrite=false;});
       }
 
-      // Firebase'de veri var — yükle
-      const fbG=normalizeGame(d.G||null);
-      const fbHIST=normalizeHIST(d.HIST);
-
       if(!_fbReady){
-        // İlk bağlantı: Firebase verisini localStorage'dan daha güncel say
-        G=fbG;
-        HIST=fbHIST;
-        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         _fbReady=true;
         renderHome();
-        if(G&&!G.done)toast('☁️ Devam eden oyun buluttan yüklendi');
-        else if(HIST.length)toast('☁️ Geçmiş oyunlar buluttan yüklendi');
+        if(HIST.length)toast(`☁️ ${HIST.length} oyun yüklendi`);
       }else{
-        // Başka cihazdan değişiklik geldi
-        G=normalizeGame(fbG);
-        HIST=fbHIST;
-        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         const sc=document.querySelector('.sc.on');
         if(sc){
           const id=sc.id.replace('sc-','');

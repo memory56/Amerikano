@@ -1,4 +1,4 @@
-const CACHE = 'amerikano-v2';
+const CACHE = 'amerikano-v3';
 const ASSETS = [
   './index.html',
   './manifest.json',
