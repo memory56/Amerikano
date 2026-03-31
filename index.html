@@ -523,8 +523,8 @@ let _fbReady = false, _localWrite = false, _fbRef = null;
 function persist(){
   // Her zaman localStorage'a yaz (çevrimdışı yedek)
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-  // Firebase'e yaz
-  if(_fbRef){
+  // Firebase'e yaz — sadece gerçek veri varsa (boş veriyle üzerine yazma!)
+  if(_fbRef&&(G||HIST.length)){
     _localWrite=true;
     _fbRef.set({G:G||null,HIST:HIST.length?HIST:[]},()=>{_localWrite=false;});
   }
@@ -555,13 +555,14 @@ function initFirebase(){
       if(_localWrite)return;
       const d=snap.val();
 
-      if(!d||(!d.G&&(!d.HIST||!d.HIST.length))){
-        // Firebase boş — localStorage'da eski veri varsa buluta aktar
-        if(G||HIST.length){
-          toast('☁️ Eski veriler buluta aktarılıyor...');
+      if(!d||(!d.G&&(!d.HIST||(!Array.isArray(d.HIST)&&!Object.keys(d.HIST||{}).length)||(Array.isArray(d.HIST)&&!d.HIST.length)))){
+        // Firebase boş — localStorage'da gerçek veri varsa buluta aktar
+        if(HIST.length){
+          toast('☁️ Yerel veriler buluta aktarılıyor...');
           persist();
         }
         _fbReady=true;
+        renderHome();
         return;
       }
 
@@ -990,6 +991,10 @@ function confirmNp(){
 function saveRound(){
   const missing=G.players.filter(p=>rndScores[p]===null||rndScores[p]===undefined);
   if(missing.length){toast(`${missing.join(', ')} için puan girilmedi!`);return;}
+
+  // Her elde mutlaka bir kişi -10 veya -20 almalı
+  const hasBitme=G.players.some(p=>rndScores[p]===-10||rndScores[p]===-20);
+  if(!hasBitme){toast('❓ Kim Bitti?');return;}
 
   if(editMode!==false){
     G.rounds[editMode].scores={...rndScores};
