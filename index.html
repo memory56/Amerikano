@@ -551,52 +551,55 @@ function initFirebase(){
     });
     _fbRef=firebase.database(app).ref('amerikano');
 
-    _fbRef.on('value',snap=>{
-      if(_localWrite)return;
+    _fbRef.once('value',snap=>{
+      // Sadece bir kere oku — yerel + Firebase'i birleştir, Firebase'e yaz
       const d=snap.val();
-
-      // Firebase'den gelen HIST'i normalize et
       const fbHIST=d&&d.HIST?normalizeHIST(d.HIST):[];
       const fbG=d&&d.G?normalizeGame(d.G):null;
 
-      // Yerel ve Firebase verilerini BİRLEŞTİR — id'ye göre, hiçbiri diğerini silmesin
-      const mergedMap={};
-      HIST.forEach(g=>{if(g&&g.id)mergedMap[g.id]=g;});
-      fbHIST.forEach(g=>{if(g&&g.id)mergedMap[g.id]=g;});
-      const merged=Object.values(mergedMap).sort((a,b)=>a.id-b.id);
+      // Birleştir: id'ye göre, hiçbiri diğerini silmesin
+      const map={};
+      HIST.forEach(g=>{if(g&&g.id)map[g.id]=g;});
+      fbHIST.forEach(g=>{if(g&&g.id)map[g.id]=g;});
+      const merged=Object.values(map).sort((a,b)=>a.id-b.id);
 
-      // Aktif oyun: Firebase'dekini tercih et, yoksa yerelini kullan
-      const mergedG=fbG||G;
-
-      // Değişiklik var mı?
-      const histChanged=merged.length!==HIST.length||fbHIST.length!==HIST.length;
-      const gChanged=JSON.stringify(mergedG)!==JSON.stringify(G);
+      // Aktif oyun: hangisi daha doluysa onu al
+      const mergedG=fbG||(G&&G.rounds&&G.rounds.length?G:null)||fbG||G;
 
       HIST=merged;
       G=mergedG;
-
-      // Yerel hafızayı güncelle
       try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
 
-      // Firebase'de eksik veri varsa tamamla
-      if(histChanged||gChanged){
+      // Firebase'e birleştirilmiş veriyi yaz
+      if(HIST.length||G){
         _localWrite=true;
-        _fbRef.set({G:G||null,HIST:HIST.length?HIST:[]},()=>{_localWrite=false;});
+        _fbRef.set({G:G||null,HIST:HIST},{complete:()=>{_localWrite=false;}});
       }
 
-      if(!_fbReady){
-        _fbReady=true;
-        renderHome();
-        if(HIST.length)toast(`☁️ ${HIST.length} oyun yüklendi`);
-      }else{
+      _fbReady=true;
+      renderHome();
+      if(HIST.length)toast(`☁️ ${HIST.length} oyun hazır`);
+
+      // Bundan sonra gerçek zamanlı dinle
+      _fbRef.on('value',snap2=>{
+        if(_localWrite)return;
+        const d2=snap2.val();
+        if(!d2)return;
+        const fbH2=normalizeHIST(d2.HIST||[]);
+        const fbG2=normalizeGame(d2.G||null);
+        const map2={};
+        HIST.forEach(g=>{if(g&&g.id)map2[g.id]=g;});
+        fbH2.forEach(g=>{if(g&&g.id)map2[g.id]=g;});
+        HIST=Object.values(map2).sort((a,b)=>a.id-b.id);
+        G=fbG2||G;
+        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         const sc=document.querySelector('.sc.on');
-        if(sc){
-          const id=sc.id.replace('sc-','');
+        if(sc){const id=sc.id.replace('sc-','');
           if(id==='home')renderHome();
           else if(id==='game'&&G)renderGame();
         }
         toast('🔄 Diğer cihazdan güncellendi');
-      }
+      });
     });
   }catch(e){
     _fbReady=true;
