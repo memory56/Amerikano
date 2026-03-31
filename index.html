@@ -485,6 +485,9 @@ select option{background:#1a3d29;}
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
 <script>
 // ===== GAME DATA =====
 const ALL_PLAYERS = ['Ahmet','Mehmet','Vahide','Belgin','Tülay','Muammer','Nurcan','Taner','Kübra','Veysi','Yiğit','Ceren','Suna','Dilek','Tağmaç','Özge','Fatih','Şefika','Haluk','Yunus','Raşit','Başar','Neslihan','Turgut','Hasan','Zümrüt','Filiz','Ebru','Uğurcan','Alaaddin','İsmail','İlknur','Turan','Rüzgar','Dorukan'];
@@ -508,9 +511,70 @@ let rndScores = {}; // {player: number|null}
 let editMode = false; // false or roundIndex
 // Numpad state
 let npPlayer = null, npStr = '0', npNeg = false;
+// Firebase sync
+let _fbReady = false, _localWrite = false, _fbRef = null;
 
-function persist(){try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}}
-function hydrate(){try{const g=localStorage.getItem('ame_g');const h=localStorage.getItem('ame_h');if(g)G=JSON.parse(g);if(h)HIST=JSON.parse(h);}catch(e){}}
+function persist(){
+  // Her zaman localStorage'a yaz (çevrimdışı yedek)
+  try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+  // Firebase'e yaz
+  if(_fbRef){
+    _localWrite=true;
+    _fbRef.set({G:G||null,HIST:HIST.length?HIST:[]},()=>{_localWrite=false;});
+  }
+}
+function hydrate(){
+  // Başlangıçta localStorage'dan yükle (Firebase gelene kadar)
+  try{
+    const g=localStorage.getItem('ame_g');
+    const h=localStorage.getItem('ame_h');
+    if(g)G=JSON.parse(g);
+    if(h)HIST=JSON.parse(h);
+  }catch(e){}
+}
+function initFirebase(){
+  try{
+    const app=firebase.initializeApp({
+      apiKey:"AIzaSyBmH5WsehTsA55yMSWLfpzPjtm-TGXoLAI",
+      authDomain:"amerikano-b037f.firebaseapp.com",
+      databaseURL:"https://amerikano-b037f-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:"amerikano-b037f",
+      storageBucket:"amerikano-b037f.firebasestorage.app",
+      messagingSenderId:"579047493957",
+      appId:"1:579047493957:web:53bf80388ad14b268bae2c"
+    });
+    _fbRef=firebase.database(app).ref('amerikano');
+    // Gerçek zamanlı dinleyici — başka cihazdan değişiklik gelirse güncelle
+    _fbRef.on('value',snap=>{
+      if(_localWrite)return; // kendi yazdığımızı tekrar işleme
+      const d=snap.val();
+      if(!d)return;
+      G=d.G||null;
+      HIST=Array.isArray(d.HIST)?d.HIST:(d.HIST?Object.values(d.HIST):[]);
+      try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+      if(!_fbReady){
+        // İlk yükleme: ana ekranı Firebase verisiyle çiz
+        _fbReady=true;
+        renderHome();
+        // Devam eden oyun varsa bildir
+        if(G&&!G.done)toast('☁️ Bulut verisi yüklendi');
+      }else{
+        // Başka cihazdan değişiklik: aktif ekranı güncelle
+        const sc=document.querySelector('.sc.on');
+        if(sc){
+          const id=sc.id.replace('sc-','');
+          if(id==='home')renderHome();
+          else if(id==='game'&&G)renderGame();
+        }
+        toast('🔄 Diğer cihazdan güncellendi');
+      }
+    });
+  }catch(e){
+    // Firebase bağlanamazsa localStorage ile devam et
+    _fbReady=true;
+    console.warn('Firebase bağlantı hatası:',e);
+  }
+}
 
 // ===== HELPERS =====
 function seq(){return G.version==='U'?SEQ_U:SEQ_S;}
@@ -1001,8 +1065,9 @@ if('serviceWorker' in navigator){
 }
 
 // ===== INIT =====
-hydrate();
-renderHome();
+hydrate();      // önce localStorage'dan yükle (hızlı açılış)
+renderHome();   // hemen göster
+initFirebase(); // Firebase bağlan, veri gelince günceller
 </script>
 </body>
 </html>
