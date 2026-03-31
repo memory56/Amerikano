@@ -566,8 +566,8 @@ function initFirebase(){
       }
 
       // Firebase'de veri var — yükle
-      const fbG=d.G||null;
-      const fbHIST=Array.isArray(d.HIST)?d.HIST:(d.HIST?Object.values(d.HIST):[]);
+      const fbG=normalizeGame(d.G||null);
+      const fbHIST=normalizeHIST(d.HIST);
 
       if(!_fbReady){
         // İlk bağlantı: Firebase verisini localStorage'dan daha güncel say
@@ -580,7 +580,7 @@ function initFirebase(){
         else if(HIST.length)toast('☁️ Geçmiş oyunlar buluttan yüklendi');
       }else{
         // Başka cihazdan değişiklik geldi
-        G=fbG;
+        G=normalizeGame(fbG);
         HIST=fbHIST;
         try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         const sc=document.querySelector('.sc.on');
@@ -598,7 +598,23 @@ function initFirebase(){
   }
 }
 
-// ===== HELPERS =====
+// Firebase iç içe dizileri nesneye çevirebilir — geri normalize et
+function normalizeGame(g){
+  if(!g)return g;
+  if(g.rounds&&!Array.isArray(g.rounds))g.rounds=Object.values(g.rounds);
+  if(g.rounds)g.rounds=g.rounds.map(r=>{
+    if(r&&r.scores&&!Array.isArray(r.scores))return r;// scores zaten obje, sorun yok
+    return r;
+  });
+  if(!g.asterisks)g.asterisks={};
+  if(g.players&&!Array.isArray(g.players))g.players=Object.values(g.players);
+  return g;
+}
+function normalizeHIST(h){
+  if(!h)return[];
+  const arr=Array.isArray(h)?h:Object.values(h);
+  return arr.map(normalizeGame).filter(Boolean);
+}
 function seq(){return G.version==='U'?SEQ_U:SEQ_S;}
 function oyunAt(i){return seq()[i]||'—';}
 function jokerAt(i){
