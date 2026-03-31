@@ -544,22 +544,39 @@ function initFirebase(){
       appId:"1:579047493957:web:53bf80388ad14b268bae2c"
     });
     _fbRef=firebase.database(app).ref('amerikano');
-    // Gerçek zamanlı dinleyici — başka cihazdan değişiklik gelirse güncelle
+
     _fbRef.on('value',snap=>{
-      if(_localWrite)return; // kendi yazdığımızı tekrar işleme
+      if(_localWrite)return;
       const d=snap.val();
-      if(!d)return;
-      G=d.G||null;
-      HIST=Array.isArray(d.HIST)?d.HIST:(d.HIST?Object.values(d.HIST):[]);
-      try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+
+      if(!d||(!d.G&&(!d.HIST||!d.HIST.length))){
+        // Firebase boş — localStorage'da eski veri varsa buluta aktar
+        if(G||HIST.length){
+          toast('☁️ Eski veriler buluta aktarılıyor...');
+          persist();
+        }
+        _fbReady=true;
+        return;
+      }
+
+      // Firebase'de veri var — yükle
+      const fbG=d.G||null;
+      const fbHIST=Array.isArray(d.HIST)?d.HIST:(d.HIST?Object.values(d.HIST):[]);
+
       if(!_fbReady){
-        // İlk yükleme: ana ekranı Firebase verisiyle çiz
+        // İlk bağlantı: Firebase verisini localStorage'dan daha güncel say
+        G=fbG;
+        HIST=fbHIST;
+        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         _fbReady=true;
         renderHome();
-        // Devam eden oyun varsa bildir
-        if(G&&!G.done)toast('☁️ Bulut verisi yüklendi');
+        if(G&&!G.done)toast('☁️ Devam eden oyun buluttan yüklendi');
+        else if(HIST.length)toast('☁️ Geçmiş oyunlar buluttan yüklendi');
       }else{
-        // Başka cihazdan değişiklik: aktif ekranı güncelle
+        // Başka cihazdan değişiklik geldi
+        G=fbG;
+        HIST=fbHIST;
+        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         const sc=document.querySelector('.sc.on');
         if(sc){
           const id=sc.id.replace('sc-','');
@@ -570,7 +587,6 @@ function initFirebase(){
       }
     });
   }catch(e){
-    // Firebase bağlanamazsa localStorage ile devam et
     _fbReady=true;
     console.warn('Firebase bağlantı hatası:',e);
   }
