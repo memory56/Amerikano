@@ -550,54 +550,60 @@ function initFirebase(){
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
 
-    // Bir kere oku, birleştir, Firebase'e yaz, sonra dinlemeye geç
     _fbRef.once('value', snap=>{
       const d=snap.val();
       const fbHIST=d&&d.HIST ? normalizeHIST(d.HIST) : [];
       const fbG=d&&d.G ? normalizeGame(d.G) : null;
 
-      // HIST: id bazlı birleştir, ikisindeki tüm oyunları koru
-      const map={};
-      HIST.forEach(g=>{if(g&&g.id)map[g.id]=g;});
-      fbHIST.forEach(g=>{if(g&&g.id)map[g.id]=g;});
-      HIST=Object.values(map).sort((a,b)=>a.id-b.id);
+      // Yerel veri kazanır — Firebase sadece yerel'de olmayan oyunları ekler
+      const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
+      fbHIST.forEach(g=>{
+        if(g&&g.id&&!localIds.has(g.id)) HIST.push(g);
+      });
+      HIST.sort((a,b)=>a.id-b.id);
 
-      // G: round sayısı daha fazla olanı al
+      // Aktif oyun: yerel daha fazla round'a sahipse yerel kazanır
       const localRounds=(G&&G.rounds)?G.rounds.length:0;
       const fbRounds=(fbG&&fbG.rounds)?fbG.rounds.length:0;
-      G=fbRounds>=localRounds ? (fbG||G) : (G||fbG);
+      if(fbRounds>localRounds) G=fbG;
 
-      // localStorage ve Firebase'i güncelle
+      // localStorage güncelle
       try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-      if(HIST.length||G){
-        _localWrite=true;
-        _fbRef.set({G:G||null,HIST:HIST},()=>{setTimeout(()=>{_localWrite=false;},500);});
-      }
+
+      // Firebase'i doğru veriyle güncelle
+      _localWrite=true;
+      _fbRef.set({G:G||null,HIST:HIST},()=>{setTimeout(()=>{_localWrite=false;},1000);});
 
       _fbReady=true;
       renderHome();
-      if(HIST.length) toast(`☁️ ${HIST.length} oyun yüklendi`);
+      if(HIST.length) toast(`☁️ ${HIST.length} oyun hazır`);
 
-      // Artık gerçek zamanlı dinle (sadece başka cihaz yazarsa)
+      // Gerçek zamanlı dinle — sadece başka cihazdan yeni oyun gelince
       _fbRef.on('value', snap2=>{
         if(_localWrite) return;
         const d2=snap2.val();
         if(!d2) return;
         const fbH2=normalizeHIST(d2.HIST||[]);
+        const localIds2=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
+        let changed=false;
+        fbH2.forEach(g=>{
+          if(g&&g.id&&!localIds2.has(g.id)){HIST.push(g);changed=true;}
+        });
+        if(changed){
+          HIST.sort((a,b)=>a.id-b.id);
+          try{localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+          renderHome();
+          toast('🔄 Yeni oyun senkronize edildi');
+        }
         const fbG2=normalizeGame(d2.G||null);
-        const map2={};
-        HIST.forEach(g=>{if(g&&g.id)map2[g.id]=g;});
-        fbH2.forEach(g=>{if(g&&g.id)map2[g.id]=g;});
-        HIST=Object.values(map2).sort((a,b)=>a.id-b.id);
-        const lr=(G&&G.rounds)?G.rounds.length:0;
         const fr=(fbG2&&fbG2.rounds)?fbG2.rounds.length:0;
-        if(fr>lr) G=fbG2;
-        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-        const sc=document.querySelector('.sc.on');
-        if(sc){
-          const sid=sc.id.replace('sc-','');
-          if(sid==='home') renderHome();
-          else if(sid==='game'&&G) renderGame();
+        const lr=(G&&G.rounds)?G.rounds.length:0;
+        if(fr>lr){
+          G=fbG2;
+          try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
+          const sc=document.querySelector('.sc.on');
+          if(sc&&sc.id==='sc-game') renderGame();
+          else renderHome();
         }
       });
     });
