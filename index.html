@@ -562,10 +562,10 @@ function initFirebase(){
       });
       HIST.sort((a,b)=>a.id-b.id);
 
-      // Aktif oyun: yerel daha fazla round'a sahipse yerel kazanır
+      // Aktif oyun: yerel yoksa Firebase'dekini al, ikisi de varsa round sayısı fazla olanı al
       const localRounds=(G&&G.rounds)?G.rounds.length:0;
       const fbRounds=(fbG&&fbG.rounds)?fbG.rounds.length:0;
-      if(fbRounds>localRounds) G=fbG;
+      if(fbG&&(!G||fbRounds>=localRounds)) G=fbG;
 
       // localStorage güncelle
       try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
@@ -598,7 +598,7 @@ function initFirebase(){
         const fbG2=normalizeGame(d2.G||null);
         const fr=(fbG2&&fbG2.rounds)?fbG2.rounds.length:0;
         const lr=(G&&G.rounds)?G.rounds.length:0;
-        if(fr>lr){
+        if(fbG2&&(!G||fr>=lr)){
           G=fbG2;
           try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
           const sc=document.querySelector('.sc.on');
@@ -1128,7 +1128,11 @@ function confirmDeleteHist(){
 // ===== SERVICE WORKER TEMIZLE =====
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
-    regs.forEach(r=>r.unregister());
+    if(regs.length>0){
+      Promise.all(regs.map(r=>r.unregister())).then(()=>{
+        window.location.reload(); // Eski önbellek temizlendi, yeni kodu yükle
+      });
+    }
   });
 }
 
