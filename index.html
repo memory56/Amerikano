@@ -588,14 +588,19 @@ function initFirebase(){
 
 // Firebase iç içe dizileri nesneye çevirebilir — geri normalize et
 function normalizeGame(g){
-  if(!g)return g;
-  if(g.rounds&&!Array.isArray(g.rounds))g.rounds=Object.values(g.rounds);
-  if(g.rounds)g.rounds=g.rounds.map(r=>{
-    if(r&&r.scores&&!Array.isArray(r.scores))return r;// scores zaten obje, sorun yok
-    return r;
-  });
-  if(!g.asterisks)g.asterisks={};
-  if(g.players&&!Array.isArray(g.players))g.players=Object.values(g.players);
+  if(!g)return null;
+  // players: her zaman dizi olmalı
+  if(!g.players) return null; // players yoksa bu oyun bozuk, yoksay
+  if(!Array.isArray(g.players)) g.players=Object.values(g.players);
+  if(!g.players.length) return null;
+  // rounds: dizi olmalı
+  if(g.rounds&&!Array.isArray(g.rounds)) g.rounds=Object.values(g.rounds);
+  if(!g.rounds) g.rounds=[];
+  // rounds içindeki scores kontrolü
+  g.rounds=g.rounds.filter(r=>r&&r.scores);
+  // asterisks
+  if(!g.asterisks) g.asterisks={};
+  g.players.forEach(p=>{if(g.asterisks[p]===undefined)g.asterisks[p]=0;});
   return g;
 }
 function normalizeHIST(h){
@@ -613,6 +618,7 @@ function jokerAt(i){
 function dealerAt(i){return G.players[(G.dealerIdx+i)%G.players.length];}
 
 function calcTotals(){
+  if(!G||!G.players)return{};
   const t={};G.players.forEach(p=>t[p]=0);
   G.rounds.forEach(r=>G.players.forEach(p=>t[p]+=(r.scores[p]||0)));
   G.players.forEach(p=>t[p]+=10*(G.asterisks[p]||0));
