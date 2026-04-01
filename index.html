@@ -618,10 +618,11 @@ function jokerAt(i){
 function dealerAt(i){return G.players[(G.dealerIdx+i)%G.players.length];}
 
 function calcTotals(){
-  if(!G||!G.players)return{};
-  const t={};G.players.forEach(p=>t[p]=0);
-  G.rounds.forEach(r=>G.players.forEach(p=>t[p]+=(r.scores[p]||0)));
-  G.players.forEach(p=>t[p]+=10*(G.asterisks[p]||0));
+  if(!G||!G.players||!Array.isArray(G.players)||!G.players.length)return{};
+  const t={};
+  G.players.forEach(p=>t[p]=0);
+  (G.rounds||[]).forEach(r=>{if(r&&r.scores)G.players.forEach(p=>t[p]+=(r.scores[p]||0));});
+  G.players.forEach(p=>t[p]+=10*((G.asterisks||{})[p]||0));
   return t;
 }
 function calcBitme(g){
@@ -676,7 +677,7 @@ function goSetup(){initSetup();show('setup');}
 // ===== HOME =====
 function renderHome(){
   const ac=document.getElementById('active-card');
-  if(G&&!G.done){
+  if(G&&!G.done&&G.players&&Array.isArray(G.players)&&G.players.length){
     const t=calcTotals();const low=minVal(t);
     const sp=sortedPlayers(t);
     ac.innerHTML=`<div class="crd" style="border-color:var(--gbdr);background:var(--gbg);cursor:pointer;margin-bottom:12px" onclick="continueGame()">
@@ -1113,6 +1114,8 @@ if('serviceWorker' in navigator){
 
 // ===== INIT =====
 hydrate(); // localStorage'dan yükle
+// Yüklenen G'yi normalize et — bozuksa temizle
+if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
 
 // Kurtarılan oyunları her zaman ekle (ilk açılışta da çalışsın)
 (function(){
