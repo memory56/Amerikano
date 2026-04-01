@@ -521,16 +521,14 @@ let npPlayer = null, npStr = '0', npNeg = false;
 let _fbReady = false, _localWrite = false, _fbRef = null;
 
 function persist(){
-  // Her zaman localStorage'a yaz (çevrimdışı yedek)
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-  // Firebase'e yaz — sadece gerçek veri varsa (boş veriyle üzerine yazma!)
   if(_fbRef&&(G||HIST.length)){
     _localWrite=true;
-    _fbRef.set({G:G||null,HIST:HIST.length?HIST:[]},()=>{_localWrite=false;});
+    _fbRef.set({G:G||null,HIST:HIST},()=>{setTimeout(()=>{_localWrite=false;},500);});
   }
 }
+
 function hydrate(){
-  // Başlangıçta localStorage'dan yükle (Firebase gelene kadar)
   try{
     const g=localStorage.getItem('ame_g');
     const h=localStorage.getItem('ame_h');
@@ -538,9 +536,10 @@ function hydrate(){
     if(h)HIST=JSON.parse(h);
   }catch(e){}
 }
+
 function initFirebase(){
   try{
-    const app=firebase.initializeApp({
+    const firebaseApp=firebase.initializeApp({
       apiKey:"AIzaSyBmH5WsehTsA55yMSWLfpzPjtm-TGXoLAI",
       authDomain:"amerikano-b037f.firebaseapp.com",
       databaseURL:"https://amerikano-b037f-default-rtdb.europe-west1.firebasedatabase.app",
@@ -549,61 +548,62 @@ function initFirebase(){
       messagingSenderId:"579047493957",
       appId:"1:579047493957:web:53bf80388ad14b268bae2c"
     });
-    _fbRef=firebase.database(app).ref('amerikano');
+    _fbRef=firebase.database(firebaseApp).ref('amerikano');
 
-    _fbRef.once('value',snap=>{
-      // Sadece bir kere oku — yerel + Firebase'i birleştir, Firebase'e yaz
+    // Bir kere oku, birleştir, Firebase'e yaz, sonra dinlemeye geç
+    _fbRef.once('value', snap=>{
       const d=snap.val();
-      const fbHIST=d&&d.HIST?normalizeHIST(d.HIST):[];
-      const fbG=d&&d.G?normalizeGame(d.G):null;
+      const fbHIST=d&&d.HIST ? normalizeHIST(d.HIST) : [];
+      const fbG=d&&d.G ? normalizeGame(d.G) : null;
 
-      // Birleştir: id'ye göre, hiçbiri diğerini silmesin
+      // HIST: id bazlı birleştir, ikisindeki tüm oyunları koru
       const map={};
       HIST.forEach(g=>{if(g&&g.id)map[g.id]=g;});
       fbHIST.forEach(g=>{if(g&&g.id)map[g.id]=g;});
-      const merged=Object.values(map).sort((a,b)=>a.id-b.id);
+      HIST=Object.values(map).sort((a,b)=>a.id-b.id);
 
-      // Aktif oyun: hangisi daha doluysa onu al
-      const mergedG=fbG||(G&&G.rounds&&G.rounds.length?G:null)||fbG||G;
+      // G: round sayısı daha fazla olanı al
+      const localRounds=(G&&G.rounds)?G.rounds.length:0;
+      const fbRounds=(fbG&&fbG.rounds)?fbG.rounds.length:0;
+      G=fbRounds>=localRounds ? (fbG||G) : (G||fbG);
 
-      HIST=merged;
-      G=mergedG;
+      // localStorage ve Firebase'i güncelle
       try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-
-      // Firebase'e birleştirilmiş veriyi yaz
       if(HIST.length||G){
         _localWrite=true;
-        _fbRef.set({G:G||null,HIST:HIST},{complete:()=>{_localWrite=false;}});
+        _fbRef.set({G:G||null,HIST:HIST},()=>{setTimeout(()=>{_localWrite=false;},500);});
       }
 
       _fbReady=true;
       renderHome();
-      if(HIST.length)toast(`☁️ ${HIST.length} oyun hazır`);
+      if(HIST.length) toast(`☁️ ${HIST.length} oyun yüklendi`);
 
-      // Bundan sonra gerçek zamanlı dinle
-      _fbRef.on('value',snap2=>{
-        if(_localWrite)return;
+      // Artık gerçek zamanlı dinle (sadece başka cihaz yazarsa)
+      _fbRef.on('value', snap2=>{
+        if(_localWrite) return;
         const d2=snap2.val();
-        if(!d2)return;
+        if(!d2) return;
         const fbH2=normalizeHIST(d2.HIST||[]);
         const fbG2=normalizeGame(d2.G||null);
         const map2={};
         HIST.forEach(g=>{if(g&&g.id)map2[g.id]=g;});
         fbH2.forEach(g=>{if(g&&g.id)map2[g.id]=g;});
         HIST=Object.values(map2).sort((a,b)=>a.id-b.id);
-        G=fbG2||G;
+        const lr=(G&&G.rounds)?G.rounds.length:0;
+        const fr=(fbG2&&fbG2.rounds)?fbG2.rounds.length:0;
+        if(fr>lr) G=fbG2;
         try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         const sc=document.querySelector('.sc.on');
-        if(sc){const id=sc.id.replace('sc-','');
-          if(id==='home')renderHome();
-          else if(id==='game'&&G)renderGame();
+        if(sc){
+          const sid=sc.id.replace('sc-','');
+          if(sid==='home') renderHome();
+          else if(sid==='game'&&G) renderGame();
         }
-        toast('🔄 Diğer cihazdan güncellendi');
       });
     });
   }catch(e){
     _fbReady=true;
-    console.warn('Firebase bağlantı hatası:',e);
+    console.warn('Firebase hatası:',e);
   }
 }
 
