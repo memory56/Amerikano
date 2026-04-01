@@ -1076,7 +1076,7 @@ function confirmReset(){
 }
 
 // ===== TOAST =====
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2400);}
+function toast(msg,dur=2400){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),dur);}
 
 // ===== DELETE HISTORY =====
 let pendingDeleteIdx = null;
@@ -1119,7 +1119,16 @@ hydrate(); // localStorage'dan yükle
 })();
 
 renderHome(); // Önce göster
-setTimeout(initFirebase, 100); // Firebase'i biraz geciktir — render önce tamamlansın
+
+// Debug + Firebase başlat
+setTimeout(()=>{
+  const ls_h=localStorage.getItem('ame_h');
+  const ls_g=localStorage.getItem('ame_g');
+  const hCount=ls_h?JSON.parse(ls_h).length:0;
+  const gStr=ls_g?(JSON.parse(ls_g)?'aktif var':'aktif yok'):'aktif yok';
+  toast(`📦 ${hCount} oyun, ${gStr}`);
+  initFirebase();
+},500);
 </script>
 </body>
 </html>
