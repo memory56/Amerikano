@@ -518,13 +518,12 @@ let editMode = false; // false or roundIndex
 // Numpad state
 let npPlayer = null, npStr = '0', npNeg = false;
 // Firebase sync
-let _fbReady = false, _localWrite = false, _fbRef = null;
+let _fbRef = null;
 
 function persist(){
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
   if(_fbRef&&(G||HIST.length)){
-    _localWrite=true;
-    _fbRef.set({G:G||null,HIST:HIST},()=>{setTimeout(()=>{_localWrite=false;},500);});
+    _fbRef.set({G:G||null,HIST:HIST});
   }
 }
 
@@ -550,63 +549,35 @@ function initFirebase(){
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
 
+    // Sadece bir kere oku — yerel + Firebase birleştir — göster
     _fbRef.once('value', snap=>{
       const d=snap.val();
-      const fbHIST=d&&d.HIST ? normalizeHIST(d.HIST) : [];
-      const fbG=d&&d.G ? normalizeGame(d.G) : null;
+      if(d){
+        // Firebase'den HIST al, yerel'de olmayanları ekle
+        const fbHIST=normalizeHIST(d.HIST||[]);
+        const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
+        fbHIST.forEach(g=>{if(g&&g.id&&!localIds.has(g.id))HIST.push(g);});
+        HIST.sort((a,b)=>a.id-b.id);
 
-      // Yerel veri kazanır — Firebase sadece yerel'de olmayan oyunları ekler
-      const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
-      fbHIST.forEach(g=>{
-        if(g&&g.id&&!localIds.has(g.id)) HIST.push(g);
-      });
-      HIST.sort((a,b)=>a.id-b.id);
+        // G: Firebase'de varsa ve yerel yoksa ya da daha fazla round varsa al
+        const fbG=normalizeGame(d.G||null);
+        if(fbG){
+          const lr=(G&&G.rounds)?G.rounds.length:0;
+          const fr=fbG.rounds?fbG.rounds.length:0;
+          if(!G||fr>=lr) G=fbG;
+        }
 
-      // Aktif oyun: yerel yoksa Firebase'dekini al, ikisi de varsa round sayısı fazla olanı al
-      const localRounds=(G&&G.rounds)?G.rounds.length:0;
-      const fbRounds=(fbG&&fbG.rounds)?fbG.rounds.length:0;
-      if(fbG&&(!G||fbRounds>=localRounds)) G=fbG;
+        try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+      }
 
-      // localStorage güncelle
-      try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-
-      // Firebase'i doğru veriyle güncelle
-      _localWrite=true;
-      _fbRef.set({G:G||null,HIST:HIST},()=>{setTimeout(()=>{_localWrite=false;},1000);});
+      // Yerel'de HIST varsa ama Firebase'de eksikse yükle
+      if(HIST.length||G) _fbRef.set({G:G||null,HIST:HIST});
 
       _fbReady=true;
       renderHome();
-      if(HIST.length) toast(`☁️ ${HIST.length} oyun hazır`);
-
-      // Gerçek zamanlı dinle — sadece başka cihazdan yeni oyun gelince
-      _fbRef.on('value', snap2=>{
-        if(_localWrite) return;
-        const d2=snap2.val();
-        if(!d2) return;
-        const fbH2=normalizeHIST(d2.HIST||[]);
-        const localIds2=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
-        let changed=false;
-        fbH2.forEach(g=>{
-          if(g&&g.id&&!localIds2.has(g.id)){HIST.push(g);changed=true;}
-        });
-        if(changed){
-          HIST.sort((a,b)=>a.id-b.id);
-          try{localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-          renderHome();
-          toast('🔄 Yeni oyun senkronize edildi');
-        }
-        const fbG2=normalizeGame(d2.G||null);
-        const fr=(fbG2&&fbG2.rounds)?fbG2.rounds.length:0;
-        const lr=(G&&G.rounds)?G.rounds.length:0;
-        if(fbG2&&(!G||fr>=lr)){
-          G=fbG2;
-          try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
-          const sc=document.querySelector('.sc.on');
-          if(sc&&sc.id==='sc-game') renderGame();
-          else renderHome();
-        }
-      });
+      if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
     });
+
   }catch(e){
     _fbReady=true;
     console.warn('Firebase hatası:',e);
@@ -1128,11 +1099,7 @@ function confirmDeleteHist(){
 // ===== SERVICE WORKER TEMIZLE =====
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
-    if(regs.length>0){
-      Promise.all(regs.map(r=>r.unregister())).then(()=>{
-        window.location.reload(); // Eski önbellek temizlendi, yeni kodu yükle
-      });
-    }
+    regs.forEach(r=>r.unregister());
   });
 }
 
