@@ -519,20 +519,19 @@ let editMode = false; // false or roundIndex
 let npPlayer = null, npStr = '0', npNeg = false;
 // Firebase sync
 let _fbRef = null;
-let _yazıyor = false; // persist() yazarken dinleyiciyi sustur
+let _lastWrite = 0; // Son Firebase yazma zamanı
 
 function persist(){
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
   console.log('persist() called. _fbRef=',!!_fbRef,'HIST.length=',HIST.length,'G=',!!G);
   if(_fbRef){
-    _yazıyor=true;
+    _lastWrite=Date.now();
     _fbRef.set({G:G||null,HIST:HIST},err=>{
       if(err) console.error('Firebase write ERROR:',err);
       else console.log('Firebase write OK. HIST.length=',HIST.length);
-      _yazıyor=false;
     });
   } else {
-    console.warn('persist(): _fbRef is null! Firebase not connected yet.');
+    console.warn('persist(): _fbRef is null!');
   }
 }
 
@@ -582,7 +581,7 @@ function initFirebase(){
       }
 
       // Sonraki güncellemeler: başka cihazdan geldi
-      if(_yazıyor) return;
+      if(Date.now()-_lastWrite<3000){console.log('Listener: kendi yazımız, atlanıyor');return;} // Son 3 sn içinde biz yazdık, atla
       const fbHIST=d?normalizeHIST(d.HIST||[]):[];
       const fbG=d?normalizeGame(d.G||null):null;
       HIST=fbHIST;
