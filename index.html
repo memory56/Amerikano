@@ -1093,6 +1093,7 @@ function confirmReset(){
   document.getElementById('reset-modal').classList.remove('on');
   G=null;
   try{localStorage.removeItem('ame_g');}catch(e){}
+  persist(); // Firebase'e de yaz
   renderHome();show('home');
 }
 
