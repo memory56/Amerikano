@@ -1100,22 +1100,21 @@ function confirmReset(){
 function toast(msg,dur=2400){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),dur);}
 
 // ===== DELETE HISTORY =====
-let pendingDeleteIdx = null;
 function askDeleteHist(idx){
-  pendingDeleteIdx=idx;
+  document.getElementById('del-hist-modal').dataset.idx=idx;
   document.getElementById('del-hist-modal').classList.add('on');
 }
 function cancelDeleteHist(){
-  pendingDeleteIdx=null;
   document.getElementById('del-hist-modal').classList.remove('on');
 }
 function confirmDeleteHist(){
-  console.log('confirmDeleteHist called, idx=', pendingDeleteIdx);
-  if(pendingDeleteIdx===null)return;
-  HIST.splice(pendingDeleteIdx,1);
+  console.log('confirmDeleteHist called');
+  const idx=parseInt(document.getElementById('del-hist-modal').dataset.idx);
+  console.log('idx=',idx,'HIST.length=',HIST.length);
+  if(isNaN(idx)||idx<0||idx>=HIST.length)return;
+  HIST.splice(idx,1);
   persist();
   document.getElementById('del-hist-modal').classList.remove('on');
-  pendingDeleteIdx=null;
   renderHome();
   toast('Oyun silindi 🗑');
 }
