@@ -89,9 +89,9 @@ select option{background:#1a3d29;}
 .stbl-wrap::-webkit-scrollbar{display:none;}
 .stbl{border-collapse:collapse;width:100%;}
 .stbl th,.stbl td{text-align:center;padding:3px 2px;white-space:nowrap;}
-.slbl{text-align:left!important;font-size:13px;font-weight:700;color:var(--dim);
-  letter-spacing:.5px;text-transform:uppercase;padding-right:4px!important;width:50px;}
-.sph{font-size:28px;font-weight:700;font-family:'Playfair Display',serif;min-width:56px;padding-bottom:2px;}
+.slbl{text-align:left!important;font-size:17px;font-weight:700;color:var(--dim);
+  letter-spacing:.5px;text-transform:uppercase;padding-right:4px!important;width:60px;}
+.sph{font-size:20px;font-weight:700;font-family:'Playfair Display',serif;min-width:56px;padding-bottom:2px;}
 .sph.lead{color:var(--gold);}
 .stot{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;}
 .sbit{font-size:17px;font-weight:600;color:var(--dim);}
@@ -113,9 +113,9 @@ select option{background:#1a3d29;}
 .j-var{background:rgba(61,214,140,.1);border:1px solid rgba(61,214,140,.3);color:var(--pos);}
 .j-yok{background:rgba(255,255,255,.07);border:1px solid var(--bdr);color:var(--dim);}
 .oyun-nm{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;
-  color:var(--cream);flex:1;text-align:left;padding:0 2px;white-space:nowrap;
+  color:var(--cream);flex:1;text-align:center;padding:0 2px;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis;}
-.dbadge{font-size:17px;font-weight:700;color:var(--gold);flex-shrink:0;white-space:nowrap;}
+.dbadge{font-size:20px;font-weight:700;color:var(--gold);flex-shrink:0;white-space:nowrap;font-family:'Playfair Display',serif;}
 .rnd-reset{background:rgba(231,76,60,.12);border:1px solid rgba(240,96,96,.28);border-radius:8px;
   color:#F06060;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
   padding:8px 14px;cursor:pointer;width:100%;margin-top:8px;}
@@ -131,7 +131,7 @@ select option{background:#1a3d29;}
 /* ===== ROUND ENTRY ===== */
 .rep{display:flex;align-items:center;gap:8px;padding:9px 18px;border-bottom:1px solid var(--dim2);}
 .rep:last-child{border-bottom:none;}
-.rep-n{font-size:14px;font-weight:600;min-width:68px;flex-shrink:0;}
+.rep-n{font-size:20px;font-weight:700;min-width:80px;flex-shrink:0;}
 .rep-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;flex:1;text-align:right;padding-right:6px;}
 .rep-btn{background:var(--gbg);border:1px solid var(--gbdr);border-radius:9px;
   color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
@@ -175,8 +175,8 @@ select option{background:#1a3d29;}
 
 /* ===== TABS ===== */
 .gtabs{display:flex;background:rgba(0,0,0,.2);border-bottom:1px solid var(--dim2);}
-.gtab-btn{flex:1;padding:9px;background:none;border:none;color:var(--dim);
-  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;
+.gtab-btn{flex:1;padding:11px;background:none;border:none;color:var(--dim);
+  font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;
   transition:all .2s;border-bottom:2px solid transparent;}
 .gtab-btn.on{color:var(--gold);border-bottom-color:var(--gold);}
 .gtab{display:none;} .gtab.on{display:block;}
@@ -385,7 +385,7 @@ select option{background:#1a3d29;}
 
   <!-- Tabs -->
   <div class="gtabs">
-    <button class="gtab-btn on" id="gtb-entry" onclick="switchTab('entry')">🎯 El Girişi</button>
+    <button class="gtab-btn on" id="gtb-entry" onclick="switchTab('entry')">🎯 Sayı Girişi</button>
     <button class="gtab-btn" id="gtb-hist" onclick="switchTab('hist')">📋 Geçmiş</button>
   </div>
 
@@ -500,9 +500,9 @@ const ALL_PLAYERS = ['Ahmet','Mehmet','Vahide','Belgin','Tülay','Muammer','Nurc
 
 // Exact sequences from Excel Veriler sheet
 // U version = Col C (20 games)
-const SEQ_U = ['1 SERİ','1 KÜT','1 SERİ & 1 KÜT','2 SERİ','2 KÜT','3 ÇİFT',"4'LÜ SERİ","4'LÜ KÜT",'3 SERİ','3 KÜT','2 SERİ, 2 ÇİFT','2 KÜT, 2 ÇİFT',"4'LÜ SERİ, 3'LÜ KÜT","4'LÜ KÜT, 3'LÜ SERİ",'2 SERİ 2 KÜT',"4'LÜ SERİ + 4'LÜ KÜT","4'LÜ SERİ 2","4'LÜ KÜT 2","5'Lİ SERİ",'ELDEN BİTME'];
+const SEQ_U = ['1 SERİ','1 KÜT','1 SERİ & 1 KÜT','2 SERİ','2 KÜT','3 ÇİFT',"4'LÜ SERİ","4'LÜ KÜT",'3 SERİ','3 KÜT','2 SERİ & 2 ÇİFT','2 KÜT & 2 ÇİFT',"4'LÜ SERİ & 3'LÜ KÜT","4'LÜ KÜT & 3'LÜ SERİ",'2 SERİ & 2 KÜT',"4'LÜ SERİ + 4'LÜ KÜT","4'LÜ SERİ 2","4'LÜ KÜT 2","5'Lİ SERİ",'ELDEN BİTME'];
 // Short version = Col D (16 games)
-const SEQ_S = ['1 SERİ','1 KÜT','1 SERİ - 1 KÜT','2 SERİ','2 KÜT','3 ÇİFT',"4'LÜ SERİ","4'LÜ KÜT",'3 SERİ','3 KÜT','2 SERİ 2 KÜT',"4'LÜ SERİ + 4'LÜ KÜT","4'LÜ SERİ 2","4'LÜ KÜT 2","5'Lİ SERİ",'ELDEN BİTME'];
+const SEQ_S = ['1 SERİ','1 KÜT','1 SERİ & 1 KÜT','2 SERİ','2 KÜT','3 ÇİFT',"4'LÜ SERİ","4'LÜ KÜT",'3 SERİ','3 KÜT','2 SERİ & 2 KÜT',"4'LÜ SERİ + 4'LÜ KÜT","4'LÜ SERİ 2","4'LÜ KÜT 2","5'Lİ SERİ",'ELDEN BİTME'];
 
 // Joker rule: YOK for rounds 1-8 (index 0-7) and last round. VAR for everything else.
 // "3 SERİ" is at index 8 in both sequences — first game where joker becomes VAR
@@ -568,8 +568,12 @@ function initFirebase(){
           // Firebase'i esas al — yerel ile BİRLEŞTİRME, sadece Firebase'i yükle
           HIST=normalizeHIST(d.HIST||[]);
           const fbG=normalizeGame(d.G||null);
-          if(fbG){const lr=(G&&G.rounds)?G.rounds.length:0;const fr=(fbG.rounds)?fbG.rounds.length:0;if(!G||fr>=lr)G=fbG;}
-          else G=null;
+          const resetTime=parseInt(localStorage.getItem('ame_reset_time')||'0');
+          if(fbG&&fbG.id>resetTime){// G, resetden sonra oluşturulmuşsa yükle
+            const lr=(G&&G.rounds)?G.rounds.length:0;const fr=(fbG.rounds)?fbG.rounds.length:0;if(!G||fr>=lr)G=fbG;
+          }else if(fbG&&fbG.id<=resetTime){
+            console.log('Eski G yoksayıldı (reset öncesi)');G=null;
+          }
           try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         } else {
           // Firebase boş — yerel veriyi Firebase'e yükle
@@ -1092,14 +1096,14 @@ function resetGame(){
 function confirmReset(){
   document.getElementById('reset-modal').classList.remove('on');
   G=null;
-  try{localStorage.removeItem('ame_g');}catch(e){}
-  // Firebase'den G'yi tamamen sil
+  const resetTime=Date.now();
+  try{
+    localStorage.removeItem('ame_g');
+    localStorage.setItem('ame_reset_time', resetTime);
+  }catch(e){}
   if(_fbRef){
-    _lastWrite=Date.now();
-    _fbRef.child('G').remove(err=>{
-      if(err) console.error('G silme hatası:',err);
-      else console.log('G Firebase\'den silindi');
-    });
+    _lastWrite=resetTime;
+    _fbRef.child('G').remove();
   }
   renderHome();show('home');
 }
