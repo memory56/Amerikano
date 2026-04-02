@@ -549,36 +549,81 @@ function initFirebase(){
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
 
-    // SADECE OKU — asla initFirebase içinde yazma
+    // İlk okuma
     _fbRef.once('value', snap=>{
       const d=snap.val();
-      if(!d) return; // Firebase boşsa hiçbir şey yapma
+      if(d){
+        // Firebase'den HIST al — yerel'de olmayanları ekle
+        const fbHIST=normalizeHIST(d.HIST||[]);
+        const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
+        let changed=false;
+        fbHIST.forEach(g=>{
+          if(g&&g.id&&!localIds.has(g.id)){HIST.push(g);changed=true;}
+        });
+        if(changed){
+          HIST.sort((a,b)=>a.id-b.id);
+          try{localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+        }
 
-      // Firebase'den HIST al — yerel'de olmayanları ekle
-      const fbHIST=normalizeHIST(d.HIST||[]);
-      const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
-      let changed=false;
-      fbHIST.forEach(g=>{
-        if(g&&g.id&&!localIds.has(g.id)){HIST.push(g);changed=true;}
-      });
-      if(changed){
-        HIST.sort((a,b)=>a.id-b.id);
-        try{localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-      }
-
-      // Firebase'de aktif oyun varsa ve yerelde yoksa al
-      const fbG=normalizeGame(d.G||null);
-      if(fbG&&fbG.done===false){
-        const lr=(G&&G.rounds)?G.rounds.length:0;
-        const fr=(fbG.rounds)?fbG.rounds.length:0;
-        if(!G||!G.done||fr>lr){
-          G=fbG;
-          try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
+        // Firebase'de aktif oyun varsa al
+        const fbG=normalizeGame(d.G||null);
+        if(fbG&&fbG.done===false){
+          const lr=(G&&G.rounds)?G.rounds.length:0;
+          const fr=(fbG.rounds)?fbG.rounds.length:0;
+          if(!G||!G.done||fr>lr){
+            G=fbG;
+            try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
+          }
+        } else if(!d.G){
+          // Firebase'de G yok — başka cihaz silmiş olabilir
+          G=null;
+          try{localStorage.removeItem('ame_g');}catch(e){}
         }
       }
 
       renderHome();
       if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
+
+      // Gerçek zamanlı: G değişince (silinince veya güncellenince) haber al
+      _fbRef.child('G').on('value', snap=>{
+        const raw=snap.val();
+        const fbG=normalizeGame(raw);
+        if(!fbG && G && !G.done){
+          // Başka cihaz sildi
+          G=null;
+          try{localStorage.removeItem('ame_g');}catch(e){}
+          renderHome();
+        } else if(fbG && fbG.done===false){
+          const lr=(G&&G.rounds)?G.rounds.length:0;
+          const fr=(fbG.rounds)?fbG.rounds.length:0;
+          if(!G||fr>lr){
+            G=fbG;
+            try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
+            renderHome();
+          }
+        }
+      });
+
+      // Gerçek zamanlı dinle — sadece G için (silme/güncelleme)
+      _fbRef.child('G').on('value', gSnap=>{
+        const fbG=normalizeGame(gSnap.val());
+        if(!fbG){
+          // Başka cihaz G'yi sildi
+          if(G){
+            G=null;
+            try{localStorage.removeItem('ame_g');}catch(e){}
+            renderHome();
+          }
+        } else if(fbG.done===false){
+          const lr=(G&&G.rounds)?G.rounds.length:0;
+          const fr=(fbG.rounds)?fbG.rounds.length:0;
+          if(!G||fr>lr){
+            G=fbG;
+            try{localStorage.setItem('ame_g',JSON.stringify(G));}catch(e){}
+            renderHome();
+          }
+        }
+      });
     });
 
   }catch(e){
