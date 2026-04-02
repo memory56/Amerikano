@@ -523,9 +523,16 @@ let _yazıyor = false; // persist() yazarken dinleyiciyi sustur
 
 function persist(){
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-  if(_fbRef&&(G||HIST.length)){
+  console.log('persist() called. _fbRef=',!!_fbRef,'HIST.length=',HIST.length,'G=',!!G);
+  if(_fbRef){
     _yazıyor=true;
-    _fbRef.set({G:G||null,HIST:HIST},()=>{ _yazıyor=false; });
+    _fbRef.set({G:G||null,HIST:HIST},err=>{
+      if(err) console.error('Firebase write ERROR:',err);
+      else console.log('Firebase write OK. HIST.length=',HIST.length);
+      _yazıyor=false;
+    });
+  } else {
+    console.warn('persist(): _fbRef is null! Firebase not connected yet.');
   }
 }
 
