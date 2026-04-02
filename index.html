@@ -522,7 +522,7 @@ let _fbRef = null;
 
 function persist(){
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-  if(window._fbWrite&&(G||HIST.length)) window._fbWrite({G:G||null,HIST:HIST});
+  if(_fbRef&&(G||HIST.length)) _fbRef.set({G:G||null,HIST:HIST});
 }
 
 function hydrate(){
@@ -534,7 +534,6 @@ function hydrate(){
   }catch(e){}
 }
 
-function initFirebase(){
 function initFirebase(){
   try{
     const firebaseApp=firebase.initializeApp({
@@ -548,59 +547,29 @@ function initFirebase(){
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
 
-    let _firstLoad=true;
-    let _writing=false;
-
-    // persist'i Firebase yazma ile güçlendir
-    window._fbWrite=function(data){
-      _writing=true;
-      _fbRef.set(data,()=>{setTimeout(()=>{_writing=false;},1500);});
-    };
-
-    // Gerçek zamanlı dinle — her değişiklikte çalışır (silme, güncelleme, yeni oyun)
-    _fbRef.on('value', snap=>{
-      if(_writing) return; // kendi yazdığımızı yoksay
-
+    _fbRef.once('value', snap=>{
       const d=snap.val();
-
-      if(_firstLoad){
-        _firstLoad=false;
-        if(d){
-          // İlk yüklemede: Firebase + yerel birleştir
-          const fbHIST=normalizeHIST(d.HIST||[]);
-          const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
-          fbHIST.forEach(g=>{if(g&&g.id&&!localIds.has(g.id))HIST.push(g);});
-          HIST.sort((a,b)=>a.id-b.id);
-
-          const fbG=normalizeGame(d.G||null);
-          if(fbG){
-            const lr=(G&&G.rounds)?G.rounds.length:0;
-            const fr=(fbG.rounds)?fbG.rounds.length:0;
-            if(!G||fr>=lr) G=fbG;
-          }else if(!d.G){
-            G=null;
-          }
-          try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-        }
-        renderHome();
-        if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
+      if(!d){
+        // Firebase boş — yerel veri varsa yükle, renderHome zaten yapıldı
         return;
       }
+      // Firebase'den HIST ekle — yerel'de olmayanları
+      const fbHIST=normalizeHIST(d.HIST||[]);
+      const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
+      fbHIST.forEach(g=>{if(g&&g.id&&!localIds.has(g.id))HIST.push(g);});
+      HIST.sort((a,b)=>a.id-b.id);
 
-      // Sonraki güncellemeler: başka cihazdan geldi — Firebase'i esas al
-      if(!d){G=null;HIST=[];}
-      else{
-        HIST=normalizeHIST(d.HIST||[]);
-        G=normalizeGame(d.G||null);
+      // Aktif oyun
+      const fbG=normalizeGame(d.G||null);
+      if(fbG){
+        const lr=(G&&G.rounds)?G.rounds.length:0;
+        const fr=(fbG.rounds)?fbG.rounds.length:0;
+        if(!G||fr>=lr) G=fbG;
       }
+
       try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-      const sc=document.querySelector('.sc.on');
-      if(sc){
-        const sid=sc.id.replace('sc-','');
-        if(sid==='home') renderHome();
-        else if(sid==='game'&&G) renderGame();
-        else if(sid==='game'&&!G){show('home');renderHome();}
-      }
+      renderHome();
+      if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
     });
 
   }catch(e){
