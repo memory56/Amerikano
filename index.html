@@ -519,10 +519,14 @@ let editMode = false; // false or roundIndex
 let npPlayer = null, npStr = '0', npNeg = false;
 // Firebase sync
 let _fbRef = null;
+let _yazıyor = false; // persist() yazarken dinleyiciyi sustur
 
 function persist(){
   try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-  if(_fbRef&&(G||HIST.length)) _fbRef.set({G:G||null,HIST:HIST});
+  if(_fbRef&&(G||HIST.length)){
+    _yazıyor=true;
+    _fbRef.set({G:G||null,HIST:HIST},()=>{ _yazıyor=false; });
+  }
 }
 
 function hydrate(){
@@ -570,6 +574,7 @@ function initFirebase(){
       }
 
       // Sonraki güncellemeler: başka cihazdan geldi — Firebase'i esas al
+      if(_yazıyor) return; // kendi yazdığımızı yoksay
       const fbHIST=d?normalizeHIST(d.HIST||[]):[];
       const fbG=d?normalizeGame(d.G||null):null;
       HIST=fbHIST;
