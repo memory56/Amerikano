@@ -1093,7 +1093,14 @@ function confirmReset(){
   document.getElementById('reset-modal').classList.remove('on');
   G=null;
   try{localStorage.removeItem('ame_g');}catch(e){}
-  persist(); // Firebase'e de yaz
+  // Firebase'den G'yi tamamen sil
+  if(_fbRef){
+    _lastWrite=Date.now();
+    _fbRef.child('G').remove(err=>{
+      if(err) console.error('G silme hatası:',err);
+      else console.log('G Firebase\'den silindi');
+    });
+  }
   renderHome();show('home');
 }
 
