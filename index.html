@@ -1110,6 +1110,7 @@ function cancelDeleteHist(){
   document.getElementById('del-hist-modal').classList.remove('on');
 }
 function confirmDeleteHist(){
+  console.log('confirmDeleteHist called, idx=', pendingDeleteIdx);
   if(pendingDeleteIdx===null)return;
   HIST.splice(pendingDeleteIdx,1);
   persist();
