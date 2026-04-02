@@ -566,22 +566,23 @@ function initFirebase(){
       if(ilkYukleme){
         ilkYukleme=false;
         if(d){
-          // İlk yükleme: Firebase + yerel birleştir
-          const fbHIST=normalizeHIST(d.HIST||[]);
-          const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
-          fbHIST.forEach(g=>{if(g&&g.id&&!localIds.has(g.id))HIST.push(g);});
-          HIST.sort((a,b)=>a.id-b.id);
+          // Firebase'i esas al — yerel ile BİRLEŞTİRME, sadece Firebase'i yükle
+          HIST=normalizeHIST(d.HIST||[]);
           const fbG=normalizeGame(d.G||null);
           if(fbG){const lr=(G&&G.rounds)?G.rounds.length:0;const fr=(fbG.rounds)?fbG.rounds.length:0;if(!G||fr>=lr)G=fbG;}
+          else G=null;
           try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-          renderHome();
-          if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
+        } else {
+          // Firebase boş — yerel veriyi Firebase'e yükle
+          if(HIST.length||G) _fbRef.set({G:G||null,HIST:HIST});
         }
+        renderHome();
+        if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
         return;
       }
 
-      // Sonraki güncellemeler: başka cihazdan geldi — Firebase'i esas al
-      if(_yazıyor) return; // kendi yazdığımızı yoksay
+      // Sonraki güncellemeler: başka cihazdan geldi
+      if(_yazıyor) return;
       const fbHIST=d?normalizeHIST(d.HIST||[]):[];
       const fbG=d?normalizeGame(d.G||null):null;
       HIST=fbHIST;
@@ -1128,14 +1129,7 @@ if('serviceWorker' in navigator){
 
 // ===== INIT =====
 hydrate(); // localStorage'dan yükle
-// Yüklenen G'yi normalize et — bozuksa temizle
 if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
-
-// Eski oyunları geri yükle — SADECE HIST boşsa (silinmişleri geri getirmez)
-if(!HIST.length){
-  HIST=[{"asterisks":{"Ahmet":0,"Belgin":0,"Mehmet":1,"Tülay":0,"Vahide":0},"date":"2026-03-29","dealerIdx":0,"done":true,"endTime":"21:58","id":1774801535612,"players":["Mehmet","Ahmet","Belgin","Vahide","Tülay"],"rounds":[{"dealer":"Mehmet","joker":"YOK","oyun":"1 SERİ","roundNum":1,"scores":{"Ahmet":-10,"Belgin":67,"Mehmet":12,"Tülay":71,"Vahide":42}},{"dealer":"Ahmet","joker":"YOK","oyun":"1 KÜT","roundNum":2,"scores":{"Ahmet":-10,"Belgin":17,"Mehmet":57,"Tülay":8,"Vahide":2}},{"dealer":"Belgin","joker":"YOK","oyun":"1 SERİ & 1 KÜT","roundNum":3,"scores":{"Ahmet":100,"Belgin":68,"Mehmet":100,"Tülay":100,"Vahide":-10}},{"dealer":"Vahide","joker":"YOK","oyun":"2 SERİ","roundNum":4,"scores":{"Ahmet":11,"Belgin":-10,"Mehmet":7,"Tülay":26,"Vahide":4}},{"dealer":"Tülay","joker":"YOK","oyun":"2 KÜT","roundNum":5,"scores":{"Ahmet":62,"Belgin":-10,"Mehmet":111,"Tülay":28,"Vahide":75}},{"dealer":"Mehmet","joker":"YOK","oyun":"3 ÇİFT","roundNum":6,"scores":{"Ahmet":-10,"Belgin":82,"Mehmet":4,"Tülay":37,"Vahide":9}},{"dealer":"Ahmet","joker":"YOK","oyun":"4'LÜ SERİ","roundNum":7,"scores":{"Ahmet":17,"Belgin":10,"Mehmet":2,"Tülay":-10,"Vahide":4}},{"dealer":"Belgin","joker":"YOK","oyun":"4'LÜ KÜT","roundNum":8,"scores":{"Ahmet":73,"Belgin":14,"Mehmet":4,"Tülay":8,"Vahide":-10}},{"dealer":"Vahide","joker":"VAR","oyun":"3 SERİ","roundNum":9,"scores":{"Ahmet":48,"Belgin":-10,"Mehmet":30,"Tülay":36,"Vahide":100}},{"dealer":"Tülay","joker":"VAR","oyun":"3 KÜT","roundNum":10,"scores":{"Ahmet":1,"Belgin":2,"Mehmet":100,"Tülay":-10,"Vahide":9}},{"dealer":"Mehmet","joker":"VAR","oyun":"2 SERİ, 2 ÇİFT","roundNum":11,"scores":{"Ahmet":2,"Belgin":5,"Mehmet":40,"Tülay":-10,"Vahide":3}},{"dealer":"Ahmet","joker":"VAR","oyun":"2 KÜT, 2 ÇİFT","roundNum":12,"scores":{"Ahmet":14,"Belgin":-10,"Mehmet":5,"Tülay":24,"Vahide":15}},{"dealer":"Belgin","joker":"VAR","oyun":"4'LÜ SERİ, 3'LÜ KÜT","roundNum":13,"scores":{"Ahmet":6,"Belgin":-10,"Mehmet":77,"Tülay":11,"Vahide":2}},{"dealer":"Vahide","joker":"VAR","oyun":"4'LÜ KÜT, 3'LÜ SERİ","roundNum":14,"scores":{"Ahmet":-10,"Belgin":81,"Mehmet":9,"Tülay":93,"Vahide":10}},{"dealer":"Tülay","joker":"VAR","oyun":"2 SERİ 2 KÜT","roundNum":15,"scores":{"Ahmet":-10,"Belgin":100,"Mehmet":24,"Tülay":19,"Vahide":31}},{"dealer":"Mehmet","joker":"VAR","oyun":"4'LÜ SERİ + 4'LÜ KÜT","roundNum":16,"scores":{"Ahmet":100,"Belgin":96,"Mehmet":32,"Tülay":75,"Vahide":-10}},{"dealer":"Ahmet","joker":"VAR","oyun":"4'LÜ SERİ 2","roundNum":17,"scores":{"Ahmet":-10,"Belgin":100,"Mehmet":4,"Tülay":85,"Vahide":100}},{"dealer":"Belgin","joker":"VAR","oyun":"4'LÜ KÜT 2","roundNum":18,"scores":{"Ahmet":100,"Belgin":100,"Mehmet":-10,"Tülay":26,"Vahide":24}},{"dealer":"Vahide","joker":"VAR","oyun":"5'Lİ SERİ","roundNum":19,"scores":{"Ahmet":30,"Belgin":-10,"Mehmet":60,"Tülay":43,"Vahide":100}},{"dealer":"Tülay","joker":"YOK","oyun":"ELDEN BİTME","roundNum":20,"scores":{"Ahmet":87,"Belgin":97,"Mehmet":100,"Tülay":94,"Vahide":-10}}],"time":"19:25","totalR":20,"version":"U"},{"asterisks":{"Ahmet":0,"Belgin":1,"Mehmet":0,"Tülay":1},"date":"2026-03-30","dealerIdx":0,"done":true,"endTime":"21:30","id":1774885355608,"players":["Mehmet","Tülay","Ahmet","Belgin"],"rounds":[{"dealer":"Mehmet","joker":"YOK","oyun":"1 SERİ","roundNum":1,"scores":{"Ahmet":-10,"Belgin":116,"Mehmet":73,"Tülay":100}},{"dealer":"Tülay","joker":"YOK","oyun":"1 KÜT","roundNum":2,"scores":{"Ahmet":-10,"Belgin":21,"Mehmet":7,"Tülay":82}},{"dealer":"Ahmet","joker":"YOK","oyun":"1 SERİ & 1 KÜT","roundNum":3,"scores":{"Ahmet":80,"Belgin":80,"Mehmet":-10,"Tülay":100}},{"dealer":"Belgin","joker":"YOK","oyun":"2 SERİ","roundNum":4,"scores":{"Ahmet":-10,"Belgin":23,"Mehmet":59,"Tülay":5}},{"dealer":"Mehmet","joker":"YOK","oyun":"2 KÜT","roundNum":5,"scores":{"Ahmet":2,"Belgin":-10,"Mehmet":4,"Tülay":10}},{"dealer":"Tülay","joker":"YOK","oyun":"3 ÇİFT","roundNum":6,"scores":{"Ahmet":32,"Belgin":24,"Mehmet":-10,"Tülay":5}},{"dealer":"Ahmet","joker":"YOK","oyun":"4'LÜ SERİ","roundNum":7,"scores":{"Ahmet":2,"Belgin":4,"Mehmet":96,"Tülay":-10}},{"dealer":"Belgin","joker":"YOK","oyun":"4'LÜ KÜT","roundNum":8,"scores":{"Ahmet":113,"Belgin":100,"Mehmet":3,"Tülay":-10}},{"dealer":"Mehmet","joker":"VAR","oyun":"3 SERİ","roundNum":9,"scores":{"Ahmet":-10,"Belgin":6,"Mehmet":100,"Tülay":14}},{"dealer":"Tülay","joker":"VAR","oyun":"3 KÜT","roundNum":10,"scores":{"Ahmet":20,"Belgin":-10,"Mehmet":15,"Tülay":100}},{"dealer":"Ahmet","joker":"VAR","oyun":"2 SERİ, 2 ÇİFT","roundNum":11,"scores":{"Ahmet":-10,"Belgin":100,"Mehmet":10,"Tülay":26}},{"dealer":"Belgin","joker":"VAR","oyun":"2 KÜT, 2 ÇİFT","roundNum":12,"scores":{"Ahmet":31,"Belgin":-10,"Mehmet":100,"Tülay":44}},{"dealer":"Mehmet","joker":"VAR","oyun":"4'LÜ SERİ, 3'LÜ KÜT","roundNum":13,"scores":{"Ahmet":-10,"Belgin":90,"Mehmet":3,"Tülay":12}},{"dealer":"Tülay","joker":"VAR","oyun":"4'LÜ KÜT, 3'LÜ SERİ","roundNum":14,"scores":{"Ahmet":100,"Belgin":100,"Mehmet":15,"Tülay":-10}},{"dealer":"Ahmet","joker":"VAR","oyun":"2 SERİ 2 KÜT","roundNum":15,"scores":{"Ahmet":11,"Belgin":2,"Mehmet":-10,"Tülay":12}},{"dealer":"Belgin","joker":"VAR","oyun":"4'LÜ SERİ + 4'LÜ KÜT","roundNum":16,"scores":{"Ahmet":19,"Belgin":21,"Mehmet":-10,"Tülay":33}},{"dealer":"Mehmet","joker":"VAR","oyun":"4'LÜ SERİ 2","roundNum":17,"scores":{"Ahmet":-10,"Belgin":100,"Mehmet":100,"Tülay":3}},{"dealer":"Tülay","joker":"VAR","oyun":"4'LÜ KÜT 2","roundNum":18,"scores":{"Ahmet":6,"Belgin":10,"Mehmet":4,"Tülay":-10}},{"dealer":"Ahmet","joker":"VAR","oyun":"5'Lİ SERİ","roundNum":19,"scores":{"Ahmet":12,"Belgin":-10,"Mehmet":12,"Tülay":87}},{"dealer":"Belgin","joker":"YOK","oyun":"ELDEN BİTME","roundNum":20,"scores":{"Ahmet":-10,"Belgin":82,"Mehmet":81,"Tülay":78}}],"time":"18:42","totalR":20,"version":"U"}];
-  try{localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-}
 
 renderHome(); // Önce göster
 initFirebase(); // Firebase bağlan
