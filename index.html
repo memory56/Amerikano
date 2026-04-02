@@ -547,29 +547,40 @@ function initFirebase(){
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
 
-    _fbRef.once('value', snap=>{
+    let ilkYukleme=true;
+
+    _fbRef.on('value', snap=>{
       const d=snap.val();
-      if(!d){
-        // Firebase boş — yerel veri varsa yükle, renderHome zaten yapıldı
+
+      if(ilkYukleme){
+        ilkYukleme=false;
+        if(d){
+          // İlk yükleme: Firebase + yerel birleştir
+          const fbHIST=normalizeHIST(d.HIST||[]);
+          const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
+          fbHIST.forEach(g=>{if(g&&g.id&&!localIds.has(g.id))HIST.push(g);});
+          HIST.sort((a,b)=>a.id-b.id);
+          const fbG=normalizeGame(d.G||null);
+          if(fbG){const lr=(G&&G.rounds)?G.rounds.length:0;const fr=(fbG.rounds)?fbG.rounds.length:0;if(!G||fr>=lr)G=fbG;}
+          try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+          renderHome();
+          if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
+        }
         return;
       }
-      // Firebase'den HIST ekle — yerel'de olmayanları
-      const fbHIST=normalizeHIST(d.HIST||[]);
-      const localIds=new Set(HIST.map(g=>g&&g.id).filter(Boolean));
-      fbHIST.forEach(g=>{if(g&&g.id&&!localIds.has(g.id))HIST.push(g);});
-      HIST.sort((a,b)=>a.id-b.id);
 
-      // Aktif oyun
-      const fbG=normalizeGame(d.G||null);
-      if(fbG){
-        const lr=(G&&G.rounds)?G.rounds.length:0;
-        const fr=(fbG.rounds)?fbG.rounds.length:0;
-        if(!G||fr>=lr) G=fbG;
-      }
-
+      // Sonraki güncellemeler: başka cihazdan geldi — Firebase'i esas al
+      const fbHIST=d?normalizeHIST(d.HIST||[]):[];
+      const fbG=d?normalizeGame(d.G||null):null;
+      HIST=fbHIST;
+      G=fbG;
       try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
-      renderHome();
-      if(HIST.length) toast(`☁️ ${HIST.length} oyun`);
+      const sc=document.querySelector('.sc.on');
+      if(sc){
+        const sid=sc.id.replace('sc-','');
+        if(sid==='home') renderHome();
+        else if(sid==='game'){if(G)renderGame();else{goHome();}}
+      }
     });
 
   }catch(e){
@@ -1119,16 +1130,16 @@ if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
 })();
 
 renderHome(); // Önce göster
+initFirebase(); // Firebase bağlan
 
-// Debug + Firebase başlat
-setTimeout(()=>{
-  const ls_h=localStorage.getItem('ame_h');
-  const ls_g=localStorage.getItem('ame_g');
-  const hCount=ls_h?JSON.parse(ls_h).length:0;
-  const gStr=ls_g?(JSON.parse(ls_g)?'aktif var':'aktif yok'):'aktif yok';
-  toast(`📦 ${hCount} oyun, ${gStr}`);
-  initFirebase();
-},500);
+// Geri/ileri tuşu (bfcache) — localStorage'dan yeniden yükle
+window.addEventListener('pageshow', function(e){
+  if(e.persisted){
+    hydrate();
+    if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(ex){}}
+    renderHome();
+  }
+});
 </script>
 </body>
 </html>
