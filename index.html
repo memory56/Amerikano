@@ -1143,7 +1143,9 @@ function cancelDeleteHist(){
 function confirmDeleteHist(){
   if(pendingDeleteIdx===null)return;
   HIST.splice(pendingDeleteIdx,1);
-  persist();
+  // localStorage ve Firebase'i güncelle
+  try{localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
+  if(_fbRef) _fbRef.set({G:G||null,HIST:HIST});
   document.getElementById('del-hist-modal').classList.remove('on');
   pendingDeleteIdx=null;
   renderHome();
