@@ -273,7 +273,12 @@ select option{background:#1a3d29;}
 <div id="toast" class="toast"></div>
 
 <!-- ===== HOME ===== -->
-<div id="sc-home" class="sc on">
+<div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;gap:20px">
+    <div style="font-size:28px">☕ Amerikano</div>div>
+    <div style="color:#E8C96E;font-size:14px">Devam etmek için giriş yapın</div>div>
+    <button onclick="signIn()" style="background:#fff;color:#333;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:10px">🔑 Google ile Giriş Yap</button>button>
+</div>div>
+  <div id="sc-home" class="sc on">
   <div class="tb">
     <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip</div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
@@ -493,6 +498,7 @@ select option{background:#1a3d29;}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
 <script>
 // ===== GAME DATA =====
@@ -1143,7 +1149,25 @@ hydrate(); // localStorage'dan yükle
 if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
 
 renderHome(); // Önce göster
-initFirebase(); // Firebase bağlan
+// ===== GOOGLE AUTH =====
+  const _auth = firebase.auth();
+  const _provider = new firebase.auth.GoogleAuthProvider();
+
+  function signIn(){
+      _auth.signInWithPopup(_provider).catch(err=>console.error('Giriş hatası:',err));
+  }
+  function signOut(){
+      _auth.signOut();
+  }
+
+  _auth.onAuthStateChanged(user=>{
+      if(user){
+            document.getElementById('auth-overlay').style.display='none';
+            initFirebase(); // Firebase bağlan
+      } else {
+            document.getElementById('auth-overlay').style.display='flex';
+      }
+  });
 
 // Geri/ileri tuşu (bfcache) — localStorage'dan yeniden yükle
 window.addEventListener('pageshow', function(e){
