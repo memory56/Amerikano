@@ -578,7 +578,7 @@ function initFirebase(){
         ilkYukleme=false;
         if(d){
           // Firebase'i esas al — yerel ile BİRLEŞTİRME, sadece Firebase'i yükle
-          HIST=normalizeHIST(d.HIST||[]);
+                      const localHIST=HIST.slice();HIST=normalizeHIST(d.HIST||[]);localHIST.forEach(lh=>{if(!HIST.find(fh=>fh.id===lh.id))HIST.push(lh);});HIST.sort((a,b)=>(b.id||0)-(a.id||0));
           const fbG=normalizeGame(d.G||null);
           const resetTime=parseInt(localStorage.getItem('ame_reset_time')||'0');
           if(fbG&&fbG.id>resetTime){// G, resetden sonra oluşturulmuşsa yükle
