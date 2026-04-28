@@ -562,6 +562,11 @@ function initFirebase(){
       appId:"1:579047493957:web:53bf80388ad14b268bae2c"
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
+        _auth = firebase.auth(firebaseApp);
+        _provider = new firebase.auth.GoogleAuthProvider();
+        _auth.onAuthStateChanged(function(user){
+                document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex';
+        });
 
     let ilkYukleme=true;
 
