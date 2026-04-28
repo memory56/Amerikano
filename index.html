@@ -525,6 +525,7 @@ let editMode = false; // false or roundIndex
 let npPlayer = null, npStr = '0', npNeg = false;
 // Firebase sync
 let _fbRef = null;
+  let _auth = null, _provider = null;
 let _lastWrite = 0; // Son Firebase yazma zamanı
 
 function persist(){
@@ -1153,27 +1154,18 @@ if('serviceWorker' in navigator){
 hydrate(); // localStorage'dan yükle
 if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
 
+  initFirebase(); // Auth + Firebase bağlan
 renderHome(); // Önce göster
 // ===== GOOGLE AUTH =====
-  const _auth = firebase.auth();
-  const _provider = new firebase.auth.GoogleAuthProvider();
 
   function signIn(){
-      _auth.signInWithPopup(_provider).catch(err=>console.error('Giriş hatası:',err));
+      if(_auth&&_provider)_auth.signInWithPopup(_provider).catch(err=>console.error('Giriş hatası:',err));
   }
   function signOut(){
-      _auth.signOut();
+          if(_auth)_auth.signOut();
   }
 
-  _auth.onAuthStateChanged(user=>{
-      if(user){
-            document.getElementById('auth-overlay').style.display='none';
-            initFirebase(); // Firebase bağlan
-      } else {
-            document.getElementById('auth-overlay').style.display='flex';
-      }
-  });
-
+  
 // Geri/ileri tuşu (bfcache) — localStorage'dan yeniden yükle
 window.addEventListener('pageshow', function(e){
   if(e.persisted){
