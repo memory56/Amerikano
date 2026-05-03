@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --felt:#163326;--felt-dk:#0c1f16;
+  --felt:#163326;--felt-dk:#0c1f16;h
   --gold:#C9A84C;--gold-lt:#E8C96E;--gold-dk:#9A7530;
   --cream:#F2EDE3;--dim:rgba(242,237,227,0.5);--dim2:rgba(242,237,227,0.18);
   --pos:#3DD68C;--neg:#F06060;
@@ -728,7 +728,7 @@ function renderHome(){
 
   const hl=document.getElementById('hist-home');
   if(!HIST.length){hl.innerHTML=`<div class="empty"><div class="ei">🎴</div><p>Henüz tamamlanmış oyun yok.</p></div>`;return;}
-  hl.innerHTML=HIST.slice().reverse().map((g,ri)=>{
+  hl.innerHTML=HIST.slice().sort((a,b)=>(b.id||0)-(a.id||0)).map((g)=>{
     const t={};g.players.forEach(p=>t[p]=0);
     g.rounds.forEach(r=>g.players.forEach(p=>t[p]+=(r.scores[p]||0)));
     g.players.forEach(p=>t[p]+=10*(g.asterisks[p]||0));
@@ -751,10 +751,10 @@ function renderHome(){
     }).join('');
     const hataRow=sorted.map(p=>`<td style="color:var(--neg)">${(g.asterisks[p]||0)||'—'}</td>`).join('');
 
-    return`<div class="hgame" onclick="viewHist(${HIST.length-1-ri})">
+    return`<div class="hgame" onclick="viewHist(${HIST.indexOf(g)})">
       <div class="hgame-top">
         <div class="hgame-m">${g.date}${d!=='—'?' · '+d:''} · ${g.rounds.length} el</div>
-        <button class="del-hist-btn" onclick="event.stopPropagation();askDeleteHist(${HIST.length-1-ri})" title="Oyunu Sil">🗑</button>
+        <button class="del-hist-btn" onclick="event.stopPropagation();askDeleteHist(${HIST.indexOf(g)})" title="Oyunu Sil">🗑</button>
       </div>
       <table class="hgame-tbl">
         <thead><tr><th class="lbl"></th>${thRow}</tr></thead>
