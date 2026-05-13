@@ -397,9 +397,9 @@ select option{background:#1a3d29;}
   <!-- ENTRY TAB -->
   <div id="gtab-entry" class="gtab on" style="flex:1;overflow-y:auto;padding-bottom:8px">
     <div id="re-list" style="background:var(--card);margin:8px 0 0;"></div>
-    <div style="padding:12px 18px 0;display:flex;gap:8px;align-items:stretch" id="save-wrap">
-      <button onclick="saveRound()" class="btn btn-g" id="save-btn" style="flex:4;width:auto">✅ Eli Kaydet</button>
-      <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn" style="flex:1;width:auto;margin-top:0">🗑 Sıfırla</button>
+    <div style="padding:12px 18px 8px;display:flex;gap:8px;align-items:stretch" id="save-wrap">
+      <button onclick="saveRound()" class="btn btn-g" id="save-btn" style="flex:4 1 0;width:0;min-width:0;display:block">✅ Eli Kaydet</button>
+      <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn" style="flex:1 1 0;width:0;min-width:0;margin-top:0">🗑 Sıfırla</button>
     </div>
     <div id="done-msg" class="done-msg" style="display:none">
       <div style="font-size:34px;margin-bottom:7px">🏆</div>
@@ -893,7 +893,7 @@ function renderRndEntry(){
   const rl=document.getElementById('re-list');
   const eb=document.getElementById('edit-bar');
   if(isOver){rl.innerHTML='';sw.style.display='none';dm.style.display='';eb.style.display='none';return;}
-  dm.style.display='none';sw.style.display='';
+  dm.style.display='none';sw.style.display='flex';
   if(editMode!==false){
     eb.style.display='';document.getElementById('edit-el-n').textContent=editMode+1;
     document.getElementById('save-btn').textContent='✅ Güncelle';
