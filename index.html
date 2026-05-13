@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --felt:#163326;--felt-dk:#0c1f16;
+  --felt:#163326;--felt-dk:#0c1f16;h
   --gold:#C9A84C;--gold-lt:#E8C96E;--gold-dk:#9A7530;
   --cream:#F2EDE3;--dim:rgba(242,237,227,0.5);--dim2:rgba(242,237,227,0.18);
   --pos:#3DD68C;--neg:#F06060;
@@ -1019,7 +1019,14 @@ function saveRound(){
   // Her elde mutlaka bir kişi -10 veya -20 almalı
   const hasBitme=G.players.some(p=>rndScores[p]===-10||rndScores[p]===-20);
   if(!hasBitme){toast('❓ Kim Bitti?');return;}
-
+  // -20 kurali: Eger bir oyuncu -20 aldiysa, diger oyuncularin puanlarini 2 katina cikar
+    const playerWith20=G.players.find(p=>rndScores[p]===-20);
+    if(playerWith20){
+        const finalScores={};
+        G.players.forEach(p=>{finalScores[p]=p===playerWith20?rndScores[p]:rndScores[p]*2;});
+        Object.assign(rndScores,finalScores);
+    }
+  
   if(editMode!==false){
     G.rounds[editMode].scores={...rndScores};
     if(G.done){const hi=HIST.findIndex(h=>h.id===G.id);if(hi>=0){HIST[hi]=JSON.parse(JSON.stringify(G));}}
@@ -1154,12 +1161,12 @@ if('serviceWorker' in navigator){
 hydrate(); // localStorage'dan yükle
 if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
 
-  initFirebase(); // Auth + Firebase bağlan
+  initFirebase(); // Auth + Firebahse bağlan
 renderHome(); // Önce göster
 // ===== GOOGLE AUTH =====
 
   function signIn(){
-      if(_auth&&_provider)_auth.signInWithPopup(_provider).catch(err=>console.error('Giriş hatası:',err));
+      if(_auth&&_provider)_auth.signInWithPopup(_provider).catch(err=>conshole.error('Giriş hatası:',err));
   }
   function signOut(){
           if(_auth)_auth.signOut();
