@@ -85,7 +85,7 @@ select option{background:#1a3d29;}
   border:1px solid var(--gbdr);border-radius:18px;font-size:13px;color:var(--gold);cursor:pointer;margin:2px;}
 
 /* ===== SCORE TABLE ===== */
-.stbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 10px 4px;scrollbar-width:none;}
+.stbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 10px 4px;scrollbar-width:none;flex-shrink:0;}
 .stbl-wrap::-webkit-scrollbar{display:none;}
 .stbl{border-collapse:collapse;width:100%;}
 .stbl th,.stbl td{text-align:center;padding:3px 2px;white-space:nowrap;}
@@ -179,7 +179,7 @@ select option{background:#1a3d29;}
   font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;
   transition:all .2s;border-bottom:2px solid transparent;}
 .gtab-btn.on{color:var(--gold);border-bottom-color:var(--gold);}
-.gtab{display:none;} .gtab.on{display:block;}
+.gtab{display:none;} .gtab.on{display:flex;flex-direction:column;}
 
 /* ===== HISTORY LIST ===== */
 .hline{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--dim2);}
@@ -399,13 +399,13 @@ select option{background:#1a3d29;}
   </div>
 
   <!-- ENTRY TAB -->
-  <div id="gtab-entry" class="gtab on" style="flex:1;overflow-y:auto;padding-bottom:8px">
-    <div id="re-list" style="background:var(--card);margin:8px 0 0;"></div>
-    <div style="padding:12px 18px 8px" id="save-wrap">
+  <div id="gtab-entry" class="gtab on" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+    <div id="re-list" style="background:var(--card);margin:8px 0 0;flex:1;overflow-y:auto;"></div>
+    <div style="padding:12px 18px 8px;flex-shrink:0" id="save-wrap">
       <button onclick="saveRound()" class="btn btn-g" id="save-btn">✅ Eli Kaydet</button>
       <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn">🗑 Sıfırla</button>
     </div>
-    <div id="done-msg" class="done-msg" style="display:none">
+    <div id="done-msg" class="done-msg" style="display:none;flex-shrink:0">
       <div style="font-size:34px;margin-bottom:7px">🏆</div>
       <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)">Oyun Tamamlandı!</div>
       <div style="font-size:13px;color:var(--dim);margin:4px 0 14px">Tüm eller oynandı</div>
@@ -414,7 +414,7 @@ select option{background:#1a3d29;}
   </div>
 
   <!-- HISTORY TAB -->
-  <div id="gtab-hist" class="gtab" style="flex:1;overflow-y:auto;padding-bottom:24px">
+  <div id="gtab-hist" class="gtab" style="flex:1;overflow-y:auto;padding-bottom:24px;display:flex;flex-direction:column;">
     <div id="rnd-hist"><div class="empty"><div class="ei">📋</div><p>Henüz tamamlanan el yok.</p></div></div>
   </div>
 </div>
