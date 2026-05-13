@@ -8,12 +8,12 @@
 <meta name="apple-mobile-web-app-title" content="Amerikano">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#163326">
+<meta name="theme-color" content="#163326">h
 <title>🃏 Amerikano</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --felt:#163326;--felt-dk:#0c1f16;
+  --felt:#163326;--felt-dk:#0c1f16;h
   --gold:#C9A84C;--gold-lt:#E8C96E;--gold-dk:#9A7530;
   --cream:#F2EDE3;--dim:rgba(242,237,227,0.5);--dim2:rgba(242,237,227,0.18);
   --pos:#3DD68C;--neg:#F06060;
@@ -21,15 +21,15 @@
   --gbg:rgba(201,168,76,0.12);--gbdr:rgba(201,168,76,0.3);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow-x:hidden;background:var(--felt-dk);}
+html,body{height:100%;overflow:hidden;background:var(--felt-dk);}
 body{font-family:'DM Sans',sans-serif;color:var(--cream);max-width:430px;margin:0 auto;}
 body::before{content:'';position:fixed;inset:0;
   background:radial-gradient(ellipse at 20% 5%,rgba(30,100,55,.3),transparent 55%),
              radial-gradient(ellipse at 80% 90%,rgba(10,45,22,.5),transparent 55%);
   pointer-events:none;z-index:0;}
-.app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;}
+.app{position:relative;z-index:1;height:100dvh;overflow:hidden;display:flex;flex-direction:column;}
 
-.sc{display:none;flex-direction:column;min-height:100vh;}
+.sc{display:none;flex-direction:column;height:100dvh;overflow:hidden;}
 .sc.on{display:flex;}
 
 /* TOP BAR */
@@ -395,11 +395,11 @@ select option{background:#1a3d29;}
   </div>
 
   <!-- ENTRY TAB -->
-  <div id="gtab-entry" class="gtab on" style="flex:1;overflow-y:auto;padding-bottom:24px">
+  <div id="gtab-entry" class="gtab on" style="flex:1;overflow-y:auto;padding-bottom:8px">
     <div id="re-list" style="background:var(--card);margin:8px 0 0;"></div>
-    <div style="padding:12px 18px 0" id="save-wrap">
-      <button onclick="saveRound()" class="btn btn-g" id="save-btn">✅ Eli Kaydet</button>
-      <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn">🗑 Oyunu Sıfırla</button>
+    <div style="padding:12px 18px 0;display:flex;gap:8px;align-items:stretch" id="save-wrap">
+      <button onclick="saveRound()" class="btn btn-g" id="save-btn" style="flex:4;width:auto">✅ Eli Kaydet</button>
+      <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn" style="flex:1;width:auto;margin-top:0">🗑 Sıfırla</button>
     </div>
     <div id="done-msg" class="done-msg" style="display:none">
       <div style="font-size:34px;margin-bottom:7px">🏆</div>
