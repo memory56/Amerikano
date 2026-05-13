@@ -88,17 +88,17 @@ select option{background:#1a3d29;}
 .stbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 10px 4px;scrollbar-width:none;}
 .stbl-wrap::-webkit-scrollbar{display:none;}
 .stbl{border-collapse:collapse;width:100%;}
-.stbl th,.stbl td{text-align:center;padding:3px 2px;white-space:nowrap;}
-.slbl{text-align:left!important;font-size:20px;font-weight:700;color:var(--dim);
-  letter-spacing:.5px;text-transform:uppercase;padding-right:4px!important;width:65px;}
-.sph{font-size:20px;font-weight:700;font-family:'Playfair Display',serif;min-width:56px;padding-bottom:2px;}
+.stbl th,.stbl td{text-align:center;padding:2px 2px;white-space:nowrap;}
+.slbl{text-align:left!important;font-size:14px;font-weight:700;color:var(--dim);
+  letter-spacing:.5px;text-transform:uppercase;padding-right:4px!important;width:50px;}
+.sph{font-size:16px;font-weight:700;font-family:'Playfair Display',serif;min-width:44px;padding-bottom:1px;}
 .sph.lead{color:var(--gold);}
-.stot{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;}
-.sbit{font-size:17px;font-weight:600;color:var(--dim);}
-.sgap{font-size:17px;font-weight:700;}
+.stot{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;}
+.sbit{font-size:13px;font-weight:600;color:var(--dim);}
+.sgap{font-size:13px;font-weight:700;}
 /* Hata (asterisk) */
 .ast-wrap{display:flex;flex-direction:column;align-items:center;gap:1px;}
-.ast-count{font-size:17px;font-weight:700;color:var(--gold);min-height:22px;line-height:1.2;}
+.ast-count{font-size:13px;font-weight:700;color:var(--gold);min-height:16px;line-height:1.2;}
 .abts{display:flex;gap:2px;}
 .ab{background:var(--gbg);border:1px solid var(--gbdr);border-radius:5px;
   color:var(--gold);font-size:14px;font-weight:700;padding:2px 10px;cursor:pointer;
@@ -129,10 +129,10 @@ select option{background:#1a3d29;}
   display:flex;align-items:center;justify-content:space-between;}
 
 /* ===== ROUND ENTRY ===== */
-.rep{display:flex;align-items:center;gap:8px;padding:9px 18px;border-bottom:1px solid var(--dim2);}
+.rep{display:flex;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--dim2);}
 .rep:last-child{border-bottom:none;}
-.rep-n{font-size:20px;font-weight:700;min-width:80px;flex-shrink:0;}
-.rep-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;flex:1;text-align:right;padding-right:6px;}
+.rep-n{font-size:16px;font-weight:700;min-width:70px;flex-shrink:0;}
+.rep-val{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;flex:1;text-align:right;padding-right:6px;}
 .rep-btn{background:var(--gbg);border:1px solid var(--gbdr);border-radius:9px;
   color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
   padding:7px 14px;cursor:pointer;flex-shrink:0;white-space:nowrap;}
@@ -393,7 +393,7 @@ select option{background:#1a3d29;}
   <!-- ENTRY TAB -->
   <div id="gtab-entry" class="gtab on" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
     <div id="scroll-area" style="flex:1;overflow-y:auto;min-height:0;"><div class="stbl-wrap"><table class="stbl" id="stbl"></table></div><div id="re-list" style="background:var(--card);margin:8px 0 0;"></div></div>
-    <div style="padding:12px 18px 8px;flex-shrink:0" id="save-wrap">
+    <div style="padding:8px 14px 8px;flex-shrink:0" id="save-wrap">
       <button onclick="saveRound()" class="btn btn-g" id="save-btn">✅ Eli Kaydet</button>
       <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn">🗑 Sıfırla</button>
     </div>
