@@ -85,7 +85,7 @@ select option{background:#1a3d29;}
   border:1px solid var(--gbdr);border-radius:18px;font-size:13px;color:var(--gold);cursor:pointer;margin:2px;}
 
 /* ===== SCORE TABLE ===== */
-.stbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 10px 4px;scrollbar-width:none;flex-shrink:0;}
+.stbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 10px 4px;scrollbar-width:none;}
 .stbl-wrap::-webkit-scrollbar{display:none;}
 .stbl{border-collapse:collapse;width:100%;}
 .stbl th,.stbl td{text-align:center;padding:3px 2px;white-space:nowrap;}
@@ -355,14 +355,6 @@ select option{background:#1a3d29;}
 <!-- ===== GAME ===== -->
 <div id="sc-game" class="sc">
 
-  <!-- Score Table -->
-  <div class="stbl-wrap">
-    <table class="stbl" id="stbl"></table>
-  </div>
-
-  <!-- Reset button -->
-  <!-- (taşındı: rnd-hdr içine) -->
-
   <!-- Reset confirm modal -->
   <div id="reset-modal" class="win-ov" style="z-index:400">
     <div class="win-box">
@@ -400,7 +392,8 @@ select option{background:#1a3d29;}
 
   <!-- ENTRY TAB -->
   <div id="gtab-entry" class="gtab on" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
-    <div id="re-list" style="background:var(--card);margin:8px 0 0;flex:1;overflow-y:auto;"></div>
+    <div class="stbl-wrap" style="flex-shrink:0"><table class="stbl" id="stbl"></table></div>
+      <div id="re-list" style="background:var(--card);margin:8px 0 0;flex:1;overflow-y:auto;min-height:0;"></div>
     <div style="padding:12px 18px 8px;flex-shrink:0" id="save-wrap">
       <button onclick="saveRound()" class="btn btn-g" id="save-btn">✅ Eli Kaydet</button>
       <button onclick="resetGame()" class="rnd-reset" id="rnd-reset-btn">🗑 Sıfırla</button>
