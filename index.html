@@ -238,13 +238,9 @@ select option{background:#1a3d29;}
 
 /* ===== SAVE-WRAP BUTONLAR ===== */
 #save-wrap{display:flex!important;gap:8px;align-items:stretch;}
-#save-wrap #save-btn{flex:4 1 0!important;width:0!important;min-width:0!important;display:block!important;overflow:hidden;}
-#save-wrap #rnd-reset-btn{flex:1 1 0!important;width:0!important;min-width:0!important;margin-top:0!important;display:block!important;overflow:hidden;}
+#save-wrap #save-btn{flex:4 1 0!important;min-width:0!important;display:block!important;}
+#save-wrap #rnd-reset-btn{flex:1 1 0!important;min-width:0!important;margin-top:0!important;display:block!important;}
 .done-msg{padding:18px 18px 8px;text-align:center;}
-.save-info{margin:14px 14px 0;background:rgba(61,214,140,0.08);border:1px solid rgba(61,214,140,0.25);border-radius:12px;padding:12px 14px;text-align:center;}
-.save-info-title{font-size:14px;font-weight:700;color:var(--pos);margin-bottom:6px;}
-.save-info-scores{font-size:13px;color:var(--dim);line-height:1.8;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
-.save-info-next{margin-top:8px;font-size:11px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
 
 /* ===== TABLET / LANDSCAPE ===== */
 @media (min-width:600px){
@@ -1049,7 +1045,7 @@ function saveRound(){
     document.getElementById('modal-win').classList.add('on');
   }else{
     rndScores={};G.players.forEach(p=>rndScores[p]=null);
-    persist();renderGame();showSaveInfo(ri+1, ri);
+    persist();renderGame();toast(`El ${ri+1} kaydedildi ✓`);
   }
 }
 
@@ -1130,24 +1126,7 @@ function confirmReset(){
 }
 
 // ===== TOAST =====
-function showSaveInfo(elNum, ri){
-  const rl=document.getElementById('re-list');
-  if(!rl)return;
-  const scores=G.rounds[ri].scores;
-  const sorted=[...G.players].sort((a,b)=>scores[a]-scores[b]);
-  const scoreHtml=sorted.map(p=>{
-    const s=scores[p];
-    const col=s<0?'var(--neg)':s>0?'var(--pos)':'var(--dim)';
-    return `<span style="color:${col};font-weight:700">${p.slice(0,3)}:${s>0?'+':''}${s}</span>`;
-  }).join('  ');
-  const nextI=ri+1;
-  const nextOyun=nextI<G.totalR?oyunAt(nextI):'';
-  const nextDealer=nextI<G.totalR?dealerAt(nextI):'';
-  const banner=document.createElement('div');
-  banner.className='save-info';
-  banner.innerHTML=`<div class="save-info-title">✅ El ${elNum} kaydedildi</div><div class="save-info-scores">${scoreHtml}</div>${nextI<G.totalR?`<div class="save-info-next">Sıradaki: ${nextOyun} · 🃏 ${nextDealer}</div>`:''}`;
-  rl.appendChild(banner);
-}
+
 function toast(msg,dur=2400){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),dur);}
 
 // ===== DELETE HISTORY =====
