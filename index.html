@@ -818,8 +818,7 @@ function initSetup(){
 function renderSP(){
   const c=document.getElementById('sel-players');
   c.innerHTML=!setupP.length?'<span style="color:var(--dim);font-size:13px;padding:4px 0">Oyuncu seçin (3–5 kişi)</span>':setupP.map((p,i)=>`<div class="ptag" onclick="remP(${i})">${p} <span style="font-size:10px;opacity:.6">✕</span></div>`).join('');
-  const dc=document.getElementById('dealer-chips');
-  dc.innerHTML=!setupP.length?'<span style="color:var(--dim);font-size:13px">Önce oyuncu ekleyin</span>':setupP.map(p=>`<div class="chip ${setupD===p?'on':''}" onclick="setD('${p}')">${p}</div>`).join('');
+
 }
 function addFromSel(){const s=document.getElementById('psel');const n=s.value;if(!n)return;if(setupP.includes(n)){toast('Zaten eklendi!');return;}if(setupP.length>=5){toast('En fazla 5 oyuncu');return;}setupP.push(n);s.value='';if(!setupD)setupD=setupP[0];renderSP();}
 function addCustom(){
