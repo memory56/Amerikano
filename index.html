@@ -1045,7 +1045,7 @@ function saveRound(){
     document.getElementById('modal-win').classList.add('on');
   }else{
     rndScores={};G.players.forEach(p=>rndScores[p]=null);
-    persist();renderGame();toast(`El ${ri+1} kaydedildi ✓`);
+    persist();renderGame();
   }
 }
 
