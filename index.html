@@ -313,10 +313,11 @@ select option{background:#1a3d29;}
       <div class="crd">
         <div class="fg">
           <label>Listeden Seç</label>
-          <div style="display:flex;gap:7px">
-            <select id="psel" style="flex:1"><option value="">-- Seçin --</option></select>
-            <button onclick="addFromSel()" class="btn btn-g btn-sm">Ekle</button>
-          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+<select id="psel" style="flex:1;min-width:0;"><option value="">-- Seçin --</option></select>
+<button onclick="addFromSel()" class="btn btn-g btn-sm">Ekle</button>
+<button onclick="askDelPlayer()" class="btn btn-sm" style="flex-shrink:0;background:rgba(240,96,96,.15);color:var(--neg);border:1px solid rgba(240,96,96,.3);">Sil</button>
+</div>
         </div>
         <div class="fg" style="margin-bottom:0">
           <label>Yeni İsim</label>
@@ -330,25 +331,28 @@ select option{background:#1a3d29;}
         </div>
       </div>
     </div>
-    <div class="sec">
-      <div class="sec-t">Oyun Versiyonu</div>
-      <div class="crd">
-        <div class="trow">
-          <div><div class="trow-l">U Versiyonu</div><div class="trow-s" id="ver-lbl">U = 20 El</div></div>
-          <label class="tog"><input type="checkbox" id="ver-tog" checked onchange="updVer()"><span class="tsl"></span></label>
+    <div style="display:flex;gap:10px;padding:0 18px;margin-bottom:12px;align-items:stretch;">
+      <div style="flex:0 0 auto;display:flex;flex-direction:column;">
+        <div class="sec-t">Versiyon</div>
+        <div class="crd" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div class="trow" style="border-bottom:none;padding:8px 0;">
+            <div>
+              <div class="trow-l" style="font-size:13px;">U Versiyonu</div>
+              <div class="trow-s" id="ver-lbl">U = 20 El</div>
+            </div>
+            <label class="tog"><input type="checkbox" id="ver-tog" checked onchange="updVer()"><span class="tsl"></span></label>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="sec">
-      <div class="sec-t">Tarih &amp; Saat</div>
-      <div class="crd">
-        <div class="fg"><label>Tarih</label><input type="date" id="gdate"></div>
-        <div class="fg" style="margin-bottom:0"><label>Başlangıç Saati</label><input type="time" id="gtime"></div>
+      <div style="flex:1;display:flex;flex-direction:column;">
+        <div class="sec-t">Tarih &amp; Saat</div>
+        <div class="crd" style="flex:1;">
+          <div style="display:flex;gap:8px;">
+            <div class="fg" style="flex:1;margin-bottom:0;"><label>Tarih</label><input type="date" id="gdate"></div>
+            <div class="fg" style="flex:0 0 auto;width:100px;margin-bottom:0;"><label>Saat</label><input type="time" id="gtime"></div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="sec">
-      <div class="sec-t">İlk Dağıtıcı</div>
-      <div class="crd"><div id="dealer-chips" class="chips"><span style="color:var(--dim);font-size:13px">Önce oyuncu ekleyin</span></div></div>
     </div>
     <div class="sec"><button onclick="startGame()" class="btn btn-g">🃏 Oyunu Başlat</button></div>
   </div>
@@ -483,6 +487,21 @@ select option{background:#1a3d29;}
       <button onclick="confirmDeleteHist()" class="btn" style="flex:1;background:rgba(231,76,60,.8);color:white;">🗑 Sil</button>
     </div>
   </div>
+</div>
+
+<div id="del-player-modal" class="win-ov" style="z-index:600;">
+<div class="win-box">
+<div style="font-size:36px;margin-bottom:8px">🗑️</div>
+<div class="win-t" style="font-size:18px">İsmi Listeden Sil</div>
+<div style="font-size:13px;color:var(--dim);margin:10px 0 20px;line-height:1.6">
+<strong id="del-player-name" style="color:var(--cream)"></strong><br>
+ismi kalıcı olarak listeden silinecek.<br>Emin misiniz?
+</div>
+<div style="display:flex;gap:8px">
+<button onclick="document.getElementById('del-player-modal').classList.remove('on')" class="btn btn-w" style="flex:1">İptal</button>
+<button onclick="confirmDelPlayer()" class="btn" style="flex:1;background:rgba(231,76,60,.8);color:white;">Sil</button>
+</div>
+</div>
 </div>
 
 <!-- ===== WIN MODAL ===== -->
@@ -771,6 +790,21 @@ function renderHome(){
 function viewHist(i){G={...HIST[i],done:true};showFinal();}
 
 // ===== SETUP =====
+function askDelPlayer(){
+const sel=document.getElementById('psel');const name=sel.value;
+if(!name){toast('[Silinecek ismi seçin]');return;}
+document.getElementById('del-player-name').textContent=name;
+document.getElementById('del-player-modal').dataset.target=name;
+document.getElementById('del-player-modal').classList.add('on');}
+function confirmDelPlayer(){
+const modal=document.getElementById('del-player-modal');const name=modal.dataset.target;
+modal.classList.remove('on');
+const idx=ALL_PLAYERS.indexOf(name);if(idx>-1)ALL_PLAYERS.splice(idx,1);
+try{const ex=JSON.parse(localStorage.getItem('ame_extra_players')||'[]');const ei=ex.indexOf(name);if(ei>-1){ex.splice(ei,1);localStorage.setItem('ame_extra_players',JSON.stringify(ex));}}catch(e){}
+const sel=document.getElementById('psel');const opt=Array.from(sel.options).find(o=>o.value===name);if(opt)sel.remove(opt.index);sel.value='';
+toast('"'+name+'" listeden silindi');
+}
+
 function initSetup(){
   setupP=[];setupD=null;
   const sel=document.getElementById('psel');
@@ -788,7 +822,15 @@ function renderSP(){
   dc.innerHTML=!setupP.length?'<span style="color:var(--dim);font-size:13px">Önce oyuncu ekleyin</span>':setupP.map(p=>`<div class="chip ${setupD===p?'on':''}" onclick="setD('${p}')">${p}</div>`).join('');
 }
 function addFromSel(){const s=document.getElementById('psel');const n=s.value;if(!n)return;if(setupP.includes(n)){toast('Zaten eklendi!');return;}if(setupP.length>=5){toast('En fazla 5 oyuncu');return;}setupP.push(n);s.value='';if(!setupD)setupD=setupP[0];renderSP();}
-function addCustom(){const i=document.getElementById('pinput');const n=i.value.trim();if(!n)return;if(setupP.includes(n)){toast('Zaten eklendi!');return;}if(setupP.length>=5){toast('En fazla 5 oyuncu');return;}setupP.push(n);i.value='';if(!setupD)setupD=setupP[0];renderSP();}
+function addCustom(){
+const i=document.getElementById('pinput');const n=i.value.trim();if(!n)return;
+if(!ALL_PLAYERS.includes(n)){
+ALL_PLAYERS.push(n);
+try{const ex=JSON.parse(localStorage.getItem('ame_extra_players')||'[]');if(!ex.includes(n)){ex.push(n);localStorage.setItem('ame_extra_players',JSON.stringify(ex));}}catch(e){}
+const sel=document.getElementById('psel');const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);}
+if(setupP.includes(n)){toast('Zaten eklendi!');i.value='';return;}
+if(setupP.length>=5){toast('En fazla 5 oyuncu');return;}
+setupP.push(n);i.value='';if(!setupD)setupD=setupP[0];renderSP();}
 function remP(i){const n=setupP[i];setupP.splice(i,1);if(setupD===n)setupD=setupP[0]||null;renderSP();}
 function setD(n){setupD=n;renderSP();}
 function updVer(){document.getElementById('ver-lbl').textContent=document.getElementById('ver-tog').checked?'U = 20 El':'Kısa = 16 El';}
