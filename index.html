@@ -354,7 +354,7 @@ select option{background:#1a3d29;}
 <div id="toast" class="toast"></div>
 
 <!-- ===== HOME ===== -->
-<div id="auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;gap:20px">
+<div id="auth-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;gap:20px">
     <div style="font-size:28px">☕ Amerikano</div>
     <div style="color:#E8C96E;font-size:14px">Devam etmek için giriş yapın</div>
     <button onclick="signIn()" style="background:#fff;color:#333;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:10px">🔑 Google ile Giriş Yap</button>
@@ -664,10 +664,28 @@ function initFirebase(){
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
         _auth = firebase.auth(firebaseApp);
         _provider = new firebase.auth.GoogleAuthProvider();
-        _auth.onAuthStateChanged(function(user){
-                document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex';
+    let _syncStarted=false;
+    _auth.onAuthStateChanged(function(user){
+      if(user){
+        document.getElementById('auth-overlay').style.display='none';
+        if(!_syncStarted){_syncStarted=true;startSync();}
+      }else{
+        // Girişsiz (anonim) bağlan — ana ekran uygulamasında da pencere açmadan çalışır
+        _auth.signInAnonymously().catch(err=>{
+          console.error('Anonim giriş hatası:',err);
+          const el=document.getElementById('auth-err');
+          if(el)el.textContent='Otomatik bağlantı olmadı: '+(err&&err.code?err.code:err);
+          document.getElementById('auth-overlay').style.display='flex';
         });
+      }
+    });
+  }catch(e){
+    console.warn('Firebase hatası:',e);
+  }
+}
 
+function startSync(){
+  try{
     let ilkYukleme=true;
 
     _fbRef.on('value', snap=>{
