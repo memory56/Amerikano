@@ -242,8 +242,8 @@ select option{background:#1a3d29;}
 #save-wrap #rnd-reset-btn{flex:1 1 0!important;min-width:0!important;margin-top:0!important;display:block!important;}
 .done-msg{padding:18px 18px 8px;text-align:center;}
 
-/* ===== TABLET / LANDSCAPE ===== */
-@media (min-width:600px){
+/* ===== TABLET ===== (yükseklik şartı: yatay iPhone tablet sanılmasın) */
+@media (min-width:600px) and (min-height:600px){
   body{max-width:720px;font-size:16px;}
   .stot{font-size:34px;}
   .sph{font-size:34px;}
@@ -265,10 +265,82 @@ select option{background:#1a3d29;}
   .hgame-m{font-size:13px;}
   .hgame-s{font-size:14px;}
 }
-@media (min-width:900px){
+@media (min-width:900px) and (min-height:600px){
   body{max-width:900px;}
   .stot,.sph{font-size:38px;}
   .oyun-nm{font-size:28px;}
+}
+
+/* ===== TELEFON (dikey + yatay ortak) ===== */
+@media (max-width:599px), (orientation:landscape) and (max-height:599px){
+  .stbl{table-layout:fixed;}
+  .stbl th,.stbl td{padding:1px 1px;}
+  .slbl{font-size:10px;width:46px;letter-spacing:.3px;padding-right:2px!important;}
+  .sph{font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+  .stot{font-size:20px;}
+  .sbit,.sgap,.ast-count{font-size:12px;}
+  .stbl[data-n="5"] .sph{font-size:13px;font-family:'DM Sans',sans-serif;}
+  .stbl[data-n="5"] .stot{font-size:17px;}
+  /* Hata satırı tek satır: − sayı + */
+  .ast-wrap{flex-direction:row;justify-content:center;gap:3px;}
+  .abts{display:contents;}
+  .abts .ab:first-child{order:1;}
+  .ast-count{order:2;min-width:12px;min-height:0;}
+  .abts .ab:last-child{order:3;}
+  .ab{padding:1px 7px;font-size:13px;}
+  .stbl[data-n="5"] .ab{padding:1px 5px;}
+  /* El başlığı: 1. satır rozetler + dağıtıcı, 2. satır oyun adı */
+  .rnd-hdr{flex-wrap:wrap;gap:5px;padding:6px 12px 2px;}
+  .rbadge{font-size:13px;padding:3px 9px;}
+  .jbadge{font-size:11px;padding:3px 8px;}
+  .dbadge{font-size:16px;margin-left:auto;max-width:42%;overflow:hidden;text-overflow:ellipsis;}
+  .oyun-nm{order:10;flex:1 1 100%;font-size:21px;white-space:normal;overflow:visible;padding:2px 0 0;line-height:1.2;}
+  .prog{margin:4px 12px 6px;}
+  .gtab-btn{padding:8px;font-size:15px;}
+  #rnd-hist[data-n="4"] .hsc{font-size:18px;letter-spacing:0;}
+  #rnd-hist[data-n="5"] .hsc{font-size:15px;letter-spacing:0;}
+  #rnd-hist[data-n="4"] .hel,#rnd-hist[data-n="5"] .hel{font-size:16px;min-width:32px;}
+}
+
+/* ===== TELEFON YATAY: solda tablo, sağda el girişi ===== */
+@media (orientation:landscape) and (max-height:599px){
+  body{max-width:none;}
+  #sc-home,#sc-setup,#sc-final{width:100%;max-width:640px;margin:0 auto;}
+  .toast{left:50%;transform:translateX(-50%);}
+  .g-outer{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:minmax(0,1fr) auto;column-gap:6px;}
+  .g-outer>.stbl-wrap{grid-column:1;grid-row:1 / span 2;max-height:none;
+    padding:6px 6px 6px 10px;border-right:1px solid var(--dim2);}
+  .g-inner{grid-column:2;grid-row:1;min-height:0;}
+  #gtab-hist{grid-column:2;grid-row:2;max-height:45dvh;}
+  .stbl th,.stbl td{padding:4px 1px;}
+  .stot,.stbl[data-n="5"] .stot{font-size:24px;}
+  .sbit,.sgap,.ast-count{font-size:14px;}
+  .rnd-hdr{padding:4px 8px 2px;}
+  .oyun-nm{font-size:19px;}
+  .prog{margin:3px 8px 4px;}
+  .gtab-btn{padding:5px;font-size:14px;}
+  #re-list{margin-top:2px!important;}
+  .rep{padding:3px 8px 3px 10px;}
+  .rep-n{font-size:15px;}
+  .rep-btn{padding:4px 12px;}
+  #save-wrap{padding:5px 8px!important;}
+  #save-btn,#rnd-reset-btn{padding:9px 10px;}
+  /* Sayı klavyesi: iki sütun */
+  .mov{align-items:center;}
+  .msheet{max-width:720px;border-radius:16px;padding:12px 16px 14px;display:grid;
+    grid-template-columns:1fr 1fr;column-gap:14px;align-items:start;
+    grid-template-areas:"t p" "s p" "d p" "b p";}
+  .m-handle{display:none;}
+  .m-title{grid-area:t;margin-bottom:6px;}
+  .presets{grid-area:s;margin-bottom:6px;}
+  .pb{padding:7px 4px;font-size:13px;}
+  .nd-wrap{grid-area:d;padding:4px 10px;margin-bottom:8px;}
+  .nd{font-size:34px;min-height:44px;}
+  .numpad{grid-area:p;margin-bottom:0;gap:5px;}
+  .nb{padding:8px;font-size:20px;}
+  .mov-btns{grid-area:b;}
+  .mov-btns .btn{padding:11px;}
 }
 </style>
 </head>
@@ -375,9 +447,9 @@ select option{background:#1a3d29;}
   </div>
 
   <!-- ENTRY TAB -->
-  <div id="gtab-entry" class="gtab on" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
+  <div id="gtab-entry" class="gtab on g-outer" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
     <div class="stbl-wrap"><table class="stbl" id="stbl"></table></div>
-  <div id="gtab-entry" class="gtab on" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
+  <div id="gtab-entry-in" class="gtab on g-inner" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;">
 
   <!-- Round header -->
   <div class="rnd-hdr">
@@ -900,7 +972,9 @@ function renderScoreTable(){
       </div>
     </div></td>`;});
   h+=`</tr></tbody>`;
-  document.getElementById('stbl').innerHTML=h;
+  const tbl=document.getElementById('stbl');
+  tbl.dataset.n=cols.length;
+  tbl.innerHTML=h;
 }
 
 function renderRndHdr(){
@@ -956,6 +1030,7 @@ function renderRndEntry(){
 
 function renderRndHistList(){
   const cont=document.getElementById('rnd-hist');
+  cont.dataset.n=G.players.length;
   if(!G.rounds.length){cont.innerHTML=`<div class="empty"><div class="ei">📋</div><p>Henüz tamamlanan el yok.</p></div>`;return;}
   cont.innerHTML=`<div style="background:var(--card)">` +
     G.rounds.slice().reverse().map((r,ri)=>{
