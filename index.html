@@ -358,6 +358,7 @@ select option{background:#1a3d29;}
     <div style="font-size:28px">☕ Amerikano</div>
     <div style="color:#E8C96E;font-size:14px">Devam etmek için giriş yapın</div>
     <button onclick="signIn()" style="background:#fff;color:#333;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:10px">🔑 Google ile Giriş Yap</button>
+    <div id="auth-err" style="color:#ff9b8a;font-size:13px;max-width:280px;text-align:center"></div>
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
@@ -1290,7 +1291,12 @@ renderHome(); // Önce göster
 // ===== GOOGLE AUTH =====
 
   function signIn(){
-      if(_auth&&_provider)_auth.signInWithPopup(_provider).catch(err=>conshole.error('Giriş hatası:',err));
+      if(!(_auth&&_provider)){toast('Bağlantı kurulamadı, sayfayı yenileyin');return;}
+      _auth.signInWithPopup(_provider).catch(err=>{
+        console.error('Giriş hatası:',err);
+        const el=document.getElementById('auth-err');
+        if(el)el.textContent='Giriş olmadı: '+(err&&err.code?err.code:err);
+      });
   }
   function signOut(){
           if(_auth)_auth.signOut();
