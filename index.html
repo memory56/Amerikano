@@ -345,6 +345,9 @@ select option{background:#1a3d29;}
   #sc-game:not([data-lmode="entry"]) #save-wrap{display:none!important;}
   #sc-game:not([data-lmode="entry"]) #land-view{display:block;flex:1;min-height:0;overflow-y:auto;
     background:var(--card);margin-top:2px;}
+  /* Varsayılan (son el) ekranında sol tablo geniş, sağ sütun dar */
+  #sc-game[data-lmode="last"] .g-outer{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);}
+  #sc-game[data-lmode="last"] .gtab-btn{font-size:13px;padding:5px 2px;}
   #sc-game .gtab-btn.on{color:var(--dim);border-bottom-color:transparent;}
   #sc-game[data-lmode="entry"] #gtb-entry,#sc-game[data-lmode="hist"] #gtb-hist{color:var(--gold);border-bottom-color:var(--gold);}
   .lv-hdr{padding:5px 10px 3px;font-size:12px;color:var(--dim);letter-spacing:.4px;text-transform:uppercase;
@@ -388,7 +391,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-22:45</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-22:50</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
