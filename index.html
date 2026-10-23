@@ -366,7 +366,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-18:05</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-18:10</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
@@ -701,11 +701,12 @@ function startSync(){
           // Firebase'i esas al — yerel ile BİRLEŞTİRME, sadece Firebase'i yükle
                       const localHIST=HIST.slice();HIST=normalizeHIST(d.HIST||[]);localHIST.forEach(lh=>{if(!HIST.find(fh=>fh.id===lh.id))HIST.push(lh);});HIST.sort((a,b)=>(b.id||0)-(a.id||0));
           const fbG=normalizeGame(d.G||null);
-          const resetTime=parseInt(localStorage.getItem('ame_reset_time')||'0');
-          if(fbG&&fbG.id>resetTime){// G, resetden sonra oluşturulmuşsa yükle
-            const lr=(G&&G.rounds)?G.rounds.length:0;const fr=(fbG.rounds)?fbG.rounds.length:0;if(!G||fr>=lr)G=fbG;
-          }else if(fbG&&fbG.id<=resetTime){
-            console.log('Eski G yoksayıldı (reset öncesi)');G=null;
+          if(fbG){
+            // Firebase'de devam eden oyun varsa esas odur (sıfırlama G'yi Firebase'den siler).
+            // Yalnızca AYNI oyunun yerelde daha fazla eli varsa yereli tutup Firebase'e gönder.
+            const lr=(G&&G.rounds)?G.rounds.length:0;const fr=(fbG.rounds)?fbG.rounds.length:0;
+            if(G&&G.id===fbG.id&&lr>fr){_lastWrite=Date.now();_fbRef.child('G').set(G);}
+            else G=fbG;
           }
           try{localStorage.setItem('ame_g',JSON.stringify(G));localStorage.setItem('ame_h',JSON.stringify(HIST));}catch(e){}
         } else {
