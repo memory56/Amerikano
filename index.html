@@ -349,7 +349,16 @@ select option{background:#1a3d29;}
   #sc-game[data-lmode="last"] .g-outer{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);}
   #sc-game[data-lmode="last"] .gtab-btn{font-size:13px;padding:5px 2px;}
   #sc-game .gtab-btn.on{color:var(--dim);border-bottom-color:transparent;}
-  #sc-game[data-lmode="entry"] #gtb-entry,#sc-game[data-lmode="hist"] #gtb-hist{color:var(--gold);border-bottom-color:var(--gold);}
+  /* Sekmeler: tüm alan basılabilir, büyük dokunma hedefi */
+  #sc-game .gtabs{gap:6px;padding:4px 6px 4px 0;border-bottom:none;background:none;}
+  #sc-game .gtab-btn,#sc-game[data-lmode="last"] .gtab-btn{min-height:42px;padding:0 4px;font-size:14px;
+    display:flex;align-items:center;justify-content:center;border:1px solid var(--bdr);border-radius:9px;
+    background:rgba(255,255,255,.06);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+    user-select:none;-webkit-user-select:none;transition:none;}
+  #sc-game .gtab-btn:active{background:rgba(201,168,76,.28);}
+  #sc-game .gtab-btn.on{border-color:var(--bdr);}
+  #sc-game[data-lmode="entry"] #gtb-entry,#sc-game[data-lmode="hist"] #gtb-hist{color:#1a1a1a;
+    background:var(--gold);border-color:var(--gold);}
   .lv-hdr{padding:5px 10px 3px;font-size:12px;color:var(--dim);letter-spacing:.4px;text-transform:uppercase;
     border-bottom:1px solid var(--dim2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .lv-row{display:flex;align-items:center;padding:4px 12px 4px 10px;border-bottom:1px solid var(--dim2);}
@@ -391,7 +400,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-22:50</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-22:55</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
