@@ -392,15 +392,22 @@ select option{background:#1a3d29;}
 <div id="toast" class="toast"></div>
 
 <!-- ===== HOME ===== -->
-<div id="auth-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;gap:20px">
+<div id="auth-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(6,16,11,0.97);flex-direction:column;align-items:center;justify-content:center;gap:20px">
     <div style="font-size:28px">☕ Amerikano</div>
     <div style="color:#E8C96E;font-size:14px">Devam etmek için giriş yapın</div>
-    <button onclick="signIn()" style="background:#fff;color:#333;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:10px">🔑 Google ile Giriş Yap</button>
+    <form id="pw-form" onsubmit="event.preventDefault();signInPw();" style="display:flex;flex-direction:column;gap:10px;width:260px">
+      <input id="auth-email" type="email" autocomplete="username" placeholder="E-posta" value="amerikano@memory56.app"
+        style="padding:11px 12px;border-radius:8px;border:1px solid #555;background:#1b2a22;color:#fff;font-size:16px">
+      <input id="auth-pw" type="password" autocomplete="current-password" placeholder="Şifre"
+        style="padding:11px 12px;border-radius:8px;border:1px solid #555;background:#1b2a22;color:#fff;font-size:16px">
+      <button type="submit" id="pw-btn" style="background:#C9A84C;color:#1a1a1a;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer">Giriş Yap</button>
+    </form>
+    <button id="g-btn" onclick="signIn()" style="background:#fff;color:#333;border:none;padding:10px 20px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px">🔑 Google ile Giriş Yap</button>
     <div id="auth-err" style="color:#ff9b8a;font-size:13px;max-width:280px;text-align:center"></div>
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 23.10-22:55</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 25.10-18:40</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
@@ -664,6 +671,7 @@ let npPlayer = null, npStr = '0', npNeg = false;
 // Firebase sync
 let _fbRef = null;
   let _auth = null, _provider = null;
+let _syncStarted = false;
 let _lastWrite = 0; // Son Firebase yazma zamanı
 
 function persist(){
@@ -703,19 +711,13 @@ function initFirebase(){
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
         _auth = firebase.auth(firebaseApp);
         _provider = new firebase.auth.GoogleAuthProvider();
-    let _syncStarted=false;
     _auth.onAuthStateChanged(function(user){
+      if(user&&user.isAnonymous){_auth.signOut();return;} // eski girişsiz oturumu kapat
       if(user){
         document.getElementById('auth-overlay').style.display='none';
         if(!_syncStarted){_syncStarted=true;startSync();}
       }else{
-        // Girişsiz (anonim) bağlan — ana ekran uygulamasında da pencere açmadan çalışır
-        _auth.signInAnonymously().catch(err=>{
-          console.error('Anonim giriş hatası:',err);
-          const el=document.getElementById('auth-err');
-          if(el)el.textContent='Otomatik bağlantı olmadı: '+(err&&err.code?err.code:err);
-          document.getElementById('auth-overlay').style.display='flex';
-        });
+        showAuth();
       }
     });
   }catch(e){
@@ -766,6 +768,11 @@ function startSync(){
         if(sid==='home') renderHome();
         else if(sid==='game'){if(G)renderGame();else{goHome();}}
       }
+    }, err=>{
+      console.error('Okuma izni yok:',err);
+      _syncStarted=false;
+      showAuth('Bu hesabın erişim izni yok. Oyun hesabıyla giriş yapın.');
+      if(_auth)_auth.signOut();
     });
 
   }catch(e){
@@ -1397,6 +1404,27 @@ renderHome(); // Önce göster
         const el=document.getElementById('auth-err');
         if(el)el.textContent='Giriş olmadı: '+(err&&err.code?err.code:err);
       });
+  }
+  function showAuth(msg){
+    document.getElementById('auth-overlay').style.display='flex';
+    if(msg)document.getElementById('auth-err').textContent=msg;
+    // Ana ekran uygulamasında Google penceresi çalışmıyor — orada gizle
+    const standalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches;
+    document.getElementById('g-btn').style.display=standalone?'none':'flex';
+  }
+  function signInPw(){
+    if(!_auth){toast('Bağlantı kurulamadı, sayfayı yenileyin');return;}
+    const em=document.getElementById('auth-email').value.trim();
+    const pw=document.getElementById('auth-pw').value;
+    const err=document.getElementById('auth-err');const btn=document.getElementById('pw-btn');
+    if(!em||!pw){err.textContent='E-posta ve şifreyi girin';return;}
+    err.textContent='';btn.disabled=true;btn.textContent='Giriş yapılıyor…';
+    _auth.signInWithEmailAndPassword(em,pw).then(()=>{document.getElementById('auth-pw').value='';})
+      .catch(e=>{
+        const c=e&&e.code||'';
+        err.textContent=(c.includes('invalid')||c.includes('wrong-password')||c.includes('user-not-found'))
+          ?'E-posta veya şifre hatalı':(c.includes('too-many')?'Çok fazla deneme, biraz bekleyin':'Giriş olmadı: '+c);
+      }).finally(()=>{btn.disabled=false;btn.textContent='Giriş Yap';});
   }
   function signOut(){
           if(_auth)_auth.signOut();
