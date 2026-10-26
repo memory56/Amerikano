@@ -402,12 +402,11 @@ select option{background:#1a3d29;}
         style="padding:11px 12px;border-radius:8px;border:1px solid #555;background:#1b2a22;color:#fff;font-size:16px">
       <button type="submit" id="pw-btn" style="background:#C9A84C;color:#1a1a1a;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer">Giriş Yap</button>
     </form>
-    <button id="g-btn" onclick="signIn()" style="background:#fff;color:#333;border:none;padding:10px 20px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px">🔑 Google ile Giriş Yap</button>
     <div id="auth-err" style="color:#ff9b8a;font-size:13px;max-width:280px;text-align:center"></div>
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 25.10-18:40</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 26.10-17:45</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
@@ -670,7 +669,7 @@ let editMode = false; // false or roundIndex
 let npPlayer = null, npStr = '0', npNeg = false;
 // Firebase sync
 let _fbRef = null;
-  let _auth = null, _provider = null;
+  let _auth = null;
 let _syncStarted = false;
 let _lastWrite = 0; // Son Firebase yazma zamanı
 
@@ -710,7 +709,6 @@ function initFirebase(){
     });
     _fbRef=firebase.database(firebaseApp).ref('amerikano');
         _auth = firebase.auth(firebaseApp);
-        _provider = new firebase.auth.GoogleAuthProvider();
     _auth.onAuthStateChanged(function(user){
       if(user&&user.isAnonymous){_auth.signOut();return;} // eski girişsiz oturumu kapat
       if(user){
@@ -1395,22 +1393,10 @@ if(G){G=normalizeGame(G);if(!G)try{localStorage.removeItem('ame_g');}catch(e){}}
 
   initFirebase(); // Auth + Firebahse bağlan
 renderHome(); // Önce göster
-// ===== GOOGLE AUTH =====
-
-  function signIn(){
-      if(!(_auth&&_provider)){toast('Bağlantı kurulamadı, sayfayı yenileyin');return;}
-      _auth.signInWithPopup(_provider).catch(err=>{
-        console.error('Giriş hatası:',err);
-        const el=document.getElementById('auth-err');
-        if(el)el.textContent='Giriş olmadı: '+(err&&err.code?err.code:err);
-      });
-  }
+// ===== GİRİŞ (yalnızca e-posta/şifre) =====
   function showAuth(msg){
     document.getElementById('auth-overlay').style.display='flex';
     if(msg)document.getElementById('auth-err').textContent=msg;
-    // Ana ekran uygulamasında Google penceresi çalışmıyor — orada gizle
-    const standalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches;
-    document.getElementById('g-btn').style.display=standalone?'none':'flex';
   }
   function signInPw(){
     if(!_auth){toast('Bağlantı kurulamadı, sayfayı yenileyin');return;}
