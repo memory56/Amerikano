@@ -266,6 +266,38 @@ select option{background:#1a3d29;}
   .hgame-n{font-size:15px;}
   .hgame-m{font-size:13px;}
   .hgame-s{font-size:14px;}
+  /* 5 oyuncu tabloya sığsın */
+  .stbl{table-layout:fixed;}
+  .slbl{width:78px;}
+  .sph{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+  .stbl[data-n="5"] .sph{font-size:19px;font-family:'DM Sans',sans-serif;}
+  .stbl[data-n="5"] .stot{font-size:30px;}
+  /* Oyun adı kendi satırında, tam görünsün */
+  .rnd-hdr{flex-wrap:wrap;}
+  .dbadge{margin-left:auto;}
+  .oyun-nm{order:10;flex:1 1 100%;white-space:normal;overflow:visible;font-size:26px;line-height:1.2;padding:4px 0 0;}
+  /* Son el / Sayı girişi / Geçmiş modları (yatay iPhone ile aynı mantık) */
+  #gtab-hist{display:none!important;}
+  #sc-game:not([data-lmode="entry"]) #re-list,
+  #sc-game:not([data-lmode="entry"]) #save-wrap{display:none!important;}
+  #sc-game:not([data-lmode="entry"]) #land-view{display:block;flex:1;min-height:0;overflow-y:auto;
+    background:var(--card);margin-top:4px;}
+  #sc-game .gtabs{gap:10px;padding:8px 14px;border-bottom:none;background:none;}
+  #sc-game .gtab-btn{min-height:56px;padding:0 6px;font-size:20px;display:flex;align-items:center;
+    justify-content:center;border:1px solid var(--bdr);border-radius:12px;background:rgba(255,255,255,.06);
+    touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:none;}
+  #sc-game .gtab-btn:active{background:rgba(201,168,76,.28);}
+  #sc-game .gtab-btn.on{color:var(--dim);border-color:var(--bdr);}
+  #sc-game[data-lmode="entry"] #gtb-entry,#sc-game[data-lmode="hist"] #gtb-hist{color:#1a1a1a;
+    background:var(--gold);border-color:var(--gold);}
+  .lv-hdr{padding:10px 18px 8px;font-size:16px;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;
+    border-bottom:1px solid var(--dim2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lv-row{display:flex;align-items:center;padding:12px 22px 12px 18px;border-bottom:1px solid var(--dim2);}
+  .lv-row .rep-n{flex:1;font-size:24px;}
+  .lv-row .lv-v{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;}
+  .lv-empty{padding:30px 20px;text-align:center;color:var(--dim);font-size:20px;line-height:1.5;}
+  #land-view[data-n="4"] .hsc{font-size:24px;letter-spacing:0;}
+  #land-view[data-n="5"] .hsc{font-size:20px;letter-spacing:0;}
 }
 @media (min-width:900px) and (min-height:600px){
   body{max-width:900px;}
@@ -274,7 +306,7 @@ select option{background:#1a3d29;}
 }
 
 /* ===== TELEFON (dikey + yatay ortak) ===== */
-@media (max-width:599px), (orientation:landscape) and (max-height:599px){
+@media (max-width:599px), (orientation:landscape) and (max-height:599px), (orientation:landscape) and (min-width:880px) and (min-height:480px){
   .stbl{table-layout:fixed;}
   .stbl th,.stbl td{padding:1px 1px;}
   .slbl{font-size:10px;width:46px;letter-spacing:.3px;padding-right:2px!important;}
@@ -304,8 +336,8 @@ select option{background:#1a3d29;}
   #rnd-hist[data-n="4"] .hel,#rnd-hist[data-n="5"] .hel{font-size:16px;min-width:32px;}
 }
 
-/* ===== TELEFON YATAY: solda tablo, sağda el girişi ===== */
-@media (orientation:landscape) and (max-height:599px){
+/* ===== TELEFON + TABLET YATAY: solda tablo, sağda el girişi ===== */
+@media (orientation:landscape) and (max-height:599px), (orientation:landscape) and (min-width:880px) and (min-height:480px){
   body{max-width:none;}
   #sc-home,#sc-setup,#sc-final{width:100%;max-width:640px;margin:0 auto;}
   .toast{left:50%;transform:translateX(-50%);}
@@ -385,6 +417,57 @@ select option{background:#1a3d29;}
   .mov-btns{grid-area:b;}
   .mov-btns .btn{padding:11px;}
 }
+
+/* ===== TABLET YATAY: aynı iki sütunlu düzen, büyük yazılar ===== */
+@media (orientation:landscape) and (min-width:880px) and (min-height:480px){
+  .stbl th,.stbl td{padding:6px 2px;}
+  .slbl{font-size:13px;width:72px;}
+  .sph,.stbl[data-n="5"] .sph{font-size:19px;font-family:'DM Sans',sans-serif;}
+  .stot,.stbl[data-n="5"] .stot{font-size:34px;}
+  .sbit,.sgap,.ast-count{font-size:19px!important;}
+  /* Sayı girişi / geçmiş açıkken sol tablo daralır: 5 kişide isim ve puan biraz küçülür */
+  #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .sph{font-size:15px;}
+  #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .stot{font-size:25px;}
+  #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .ab{padding:2px 8px;}
+  .sbit,.sgap,.ast-count{font-size:17px;}
+  .ab,.stbl[data-n="5"] .ab{padding:3px 11px;font-size:16px;}
+  .ast-wrap{gap:5px;}
+  .rnd-hdr{gap:8px;padding:8px 10px 2px 12px;}
+  .rbadge{font-size:17px;padding:4px 13px;}
+  .jbadge{font-size:14px;padding:4px 11px;}
+  .dbadge{font-size:21px;}
+  .oyun-nm{font-size:27px;}
+  .prog{margin:6px 10px 4px 12px;}
+  #sc-game .gtabs{gap:8px;padding:8px 10px 6px 0;}
+  #sc-game .gtab-btn,#sc-game[data-lmode="last"] .gtab-btn{min-height:52px;font-size:18px;border-radius:11px;}
+  .lv-hdr{padding:8px 14px 6px;font-size:14px;}
+  .lv-row{padding:9px 16px 9px 14px;}
+  .lv-row .rep-n{font-size:21px;}
+  .lv-row .lv-v{font-size:27px;}
+  .lv-empty{font-size:17px;}
+  .rep{padding:6px 10px 6px 14px;}
+  .rep-n{font-size:20px;}
+  .rep-val{font-size:20px;}
+  .rep-btn{padding:8px 16px;font-size:16px;}
+  #save-wrap{padding:8px 10px!important;}
+  #save-btn,#rnd-reset-btn{padding:11px 10px;}
+  #save-btn{font-size:18px;}
+  #rnd-reset-btn{font-size:15px;}
+  #land-view .hline{padding:8px 10px 8px 14px;}
+  #land-view .hel{font-size:19px;min-width:52px;}
+  #land-view .hsc,#land-view[data-n="4"] .hsc,#land-view[data-n="5"] .hsc{font-size:17px;}
+  #land-view .hedt{padding:4px 10px;font-size:14px;}
+  #edit-bar{font-size:15px;padding:6px 12px;}
+  /* Sayı klavyesi */
+  .msheet{max-width:840px;padding:18px 22px 20px;column-gap:20px;}
+  .m-title{font-size:18px;}
+  .pb{padding:11px 4px;font-size:17px;}
+  .nd{font-size:46px;min-height:58px;}
+  .numpad{gap:8px;}
+  .nb{padding:12px;font-size:26px;}
+  .mov-btns .btn{padding:14px;font-size:17px;}
+  #sc-home,#sc-setup,#sc-final{max-width:760px;}
+}
 </style>
 </head>
 <body>
@@ -406,7 +489,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 26.10-17:45</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-02:30</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
@@ -1134,7 +1217,8 @@ function renderGame(){
 }
 
 // ===== YATAY iPHONE: sağ sütun modları =====
-var mqLand=window.matchMedia('(orientation:landscape) and (max-height:599px)');
+// Yatay iPhone ve tablet: son el / sayı girişi / geçmiş modları
+var mqLand=window.matchMedia('(orientation:landscape) and (max-height:599px), (min-width:600px) and (min-height:600px)');
 var lMode='last';
 function setLMode(m){
   lMode=m;const sc=document.getElementById('sc-game');if(sc)sc.dataset.lmode=m;
@@ -1142,6 +1226,7 @@ function setLMode(m){
 }
 function renderLandView(){
   const lv=document.getElementById('land-view');if(!lv||!G)return;
+  lv.dataset.n=G.players.length;
   if(lMode==='hist'){
     lv.innerHTML=G.rounds.length?histRowsHTML():`<div class="lv-empty">Henüz tamamlanan el yok.</div>`;
     return;
