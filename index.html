@@ -467,6 +467,48 @@ select option{background:#1a3d29;}
   html.tablet .mov-btns .btn{padding:14px;font-size:17px;}
   html.tablet #sc-home,html.tablet #sc-setup,html.tablet #sc-final{max-width:760px;}
 }
+
+/* ===== TABLET YATAY (2): üstte tam genişlik tek satır bilgi şeridi, daha büyük tablo ===== */
+@media (orientation:landscape){
+  /* Bilgi şeridi iki sütunun üstünde, tek satır */
+  html.tablet .rnd-hdr{grid-column:1 / -1;grid-row:1;flex-wrap:nowrap;align-items:center;gap:8px;padding:6px 12px 2px;}
+  html.tablet .prog{grid-column:1 / -1;grid-row:2;margin:4px 12px 4px;}
+  html.tablet .g-outer>.stbl-wrap{grid-row:3 / span 2;}
+  html.tablet .g-right{grid-column:2;grid-row:3;}
+  html.tablet #gtab-hist{grid-row:4;}
+  html.tablet .rnd-hdr::before{display:none;}
+  html.tablet .rbadge{font-size:14px;padding:3px 10px;flex-shrink:0;}
+  html.tablet .jbadge{font-size:12px;padding:3px 9px;flex-shrink:0;}
+  html.tablet #ver-badge{font-size:12px;padding:3px 9px;}
+  html.tablet .oyun-nm{order:0;flex:1 1 0;min-width:0;font-size:32px;text-align:center;white-space:nowrap;
+    overflow:hidden;padding:0 6px;line-height:1.2;}
+  html.tablet .dbadge{order:0;flex-shrink:0;max-width:none;margin-left:0;font-size:28px;font-weight:700;}
+  /* Tablo: daha büyük isim ve rakamlar */
+  html.tablet .stbl th,html.tablet .stbl td{padding:clamp(1px,0.9vh,6px) 2px;}
+  html.tablet .slbl{font-size:15px;width:70px;}
+  html.tablet .sph,html.tablet .stbl[data-n="5"] .sph{font-size:clamp(17px,2.1vw,22px);}
+  html.tablet .stot,html.tablet .stbl[data-n="5"] .stot{font-size:clamp(32px,4.1vw,42px);}
+  html.tablet .sbit,html.tablet .sgap,html.tablet .ast-count{font-size:clamp(19px,2.3vw,23px)!important;}
+  html.tablet .ab,html.tablet .stbl[data-n="5"] .ab{padding:2px 10px;font-size:17px;}
+  html.tablet .stbl[data-n="5"] .ast-wrap{gap:3px;}
+  html.tablet .stbl[data-n="5"] .ab{padding:2px 7px;}
+  html.tablet #sc-game:not([data-lmode="last"]) .ab,html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .ab{padding:1px 5px;font-size:15px;}
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .sph{font-size:clamp(13px,1.55vw,16px);}
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .stot{font-size:clamp(25px,3vw,30px);}
+  html.tablet #sc-game:not([data-lmode="last"]) .sbit,html.tablet #sc-game:not([data-lmode="last"]) .sgap,
+  html.tablet #sc-game:not([data-lmode="last"]) .ast-count{font-size:clamp(16px,1.9vw,19px)!important;}
+  /* Sağ sütun: son el yazıları biraz daha büyük, kısa ekranda satırlar sıkışır */
+  html.tablet .lv-row{padding:clamp(3px,1.1vh,9px) 16px clamp(3px,1.1vh,9px) 14px;}
+  html.tablet .lv-row .rep-n{font-size:23px;}
+  html.tablet .lv-row .lv-v{font-size:30px;}
+  html.tablet .lv-hdr{padding:clamp(3px,0.9vh,8px) 14px clamp(2px,0.7vh,6px);}
+  html.tablet #sc-game .gtabs{padding:clamp(3px,0.9vh,8px) 10px clamp(3px,0.9vh,6px) 0;}
+  html.tablet #sc-game .gtab-btn,html.tablet #sc-game[data-lmode="last"] .gtab-btn{min-height:clamp(40px,9vh,52px);}
+  html.tablet .rep{padding:clamp(1px,0.6vh,6px) 10px clamp(1px,0.6vh,6px) 14px;}
+  html.tablet .rep-btn{padding:clamp(4px,1vh,8px) 16px;}
+  html.tablet #save-wrap{padding:clamp(3px,1vh,8px) 10px!important;}
+  html.tablet #save-btn,html.tablet #rnd-reset-btn{padding:clamp(6px,1.6vh,11px) 10px;}
+}
 </style>
 <script>/* Tablet: cihazın kısa kenarı >= 480 CSS px ve iPhone değil */
 (function(){try{var k=Math.min(screen.width,screen.height);if(k>=480&&!/iPhone|iPod/.test(navigator.userAgent))document.documentElement.classList.add('tablet');}catch(e){}})();</script>
@@ -490,7 +532,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-02:45</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-02:55</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
