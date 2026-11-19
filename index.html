@@ -306,7 +306,7 @@ select option{background:#1a3d29;}
 }
 
 /* ===== TELEFON (dikey + yatay ortak) ===== */
-@media (max-width:599px), (orientation:landscape) and (max-height:599px), (orientation:landscape) and (min-width:880px) and (min-height:480px){
+@media (max-width:599px), (orientation:landscape) and (max-height:599px), (orientation:landscape) and (min-width:800px){
   .stbl{table-layout:fixed;}
   .stbl th,.stbl td{padding:1px 1px;}
   .slbl{font-size:10px;width:46px;letter-spacing:.3px;padding-right:2px!important;}
@@ -337,7 +337,7 @@ select option{background:#1a3d29;}
 }
 
 /* ===== TELEFON + TABLET YATAY: solda tablo, sağda el girişi ===== */
-@media (orientation:landscape) and (max-height:599px), (orientation:landscape) and (min-width:880px) and (min-height:480px){
+@media (orientation:landscape) and (max-height:599px), (orientation:landscape) and (min-width:800px){
   body{max-width:none;}
   #sc-home,#sc-setup,#sc-final{width:100%;max-width:640px;margin:0 auto;}
   .toast{left:50%;transform:translateX(-50%);}
@@ -418,57 +418,58 @@ select option{background:#1a3d29;}
   .mov-btns .btn{padding:11px;}
 }
 
-/* ===== TABLET YATAY: aynı iki sütunlu düzen, büyük yazılar ===== */
-@media (orientation:landscape) and (min-width:880px) and (min-height:480px){
-  .stbl th,.stbl td{padding:6px 2px;}
-  .slbl{font-size:13px;width:72px;}
-  .sph,.stbl[data-n="5"] .sph{font-size:19px;font-family:'DM Sans',sans-serif;}
-  .stot,.stbl[data-n="5"] .stot{font-size:34px;}
-  .sbit,.sgap,.ast-count{font-size:19px!important;}
-  /* Sayı girişi / geçmiş açıkken sol tablo daralır: 5 kişide isim ve puan biraz küçülür */
-  #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .sph{font-size:15px;}
-  #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .stot{font-size:25px;}
-  #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .ab{padding:2px 8px;}
-  .sbit,.sgap,.ast-count{font-size:17px;}
-  .ab,.stbl[data-n="5"] .ab{padding:3px 11px;font-size:16px;}
-  .ast-wrap{gap:5px;}
-  .rnd-hdr{gap:8px;padding:8px 10px 2px 12px;}
-  .rbadge{font-size:17px;padding:4px 13px;}
-  .jbadge{font-size:14px;padding:4px 11px;}
-  .dbadge{font-size:21px;}
-  .oyun-nm{font-size:27px;}
-  .prog{margin:6px 10px 4px 12px;}
-  #sc-game .gtabs{gap:8px;padding:8px 10px 6px 0;}
-  #sc-game .gtab-btn,#sc-game[data-lmode="last"] .gtab-btn{min-height:52px;font-size:18px;border-radius:11px;}
-  .lv-hdr{padding:8px 14px 6px;font-size:14px;}
-  .lv-row{padding:9px 16px 9px 14px;}
-  .lv-row .rep-n{font-size:21px;}
-  .lv-row .lv-v{font-size:27px;}
-  .lv-empty{font-size:17px;}
-  .rep{padding:6px 10px 6px 14px;}
-  .rep-n{font-size:20px;}
-  .rep-val{font-size:20px;}
-  .rep-btn{padding:8px 16px;font-size:16px;}
-  #save-wrap{padding:8px 10px!important;}
-  #save-btn,#rnd-reset-btn{padding:11px 10px;}
-  #save-btn{font-size:18px;}
-  #rnd-reset-btn{font-size:15px;}
-  #land-view .hline{padding:8px 10px 8px 14px;}
-  #land-view .hel{font-size:19px;min-width:52px;}
-  #land-view .hsc,#land-view[data-n="4"] .hsc,#land-view[data-n="5"] .hsc{font-size:17px;}
-  #land-view .hedt{padding:4px 10px;font-size:14px;}
-  #edit-bar{font-size:15px;padding:6px 12px;}
-  /* Sayı klavyesi */
-  .msheet{max-width:840px;padding:18px 22px 20px;column-gap:20px;}
-  .m-title{font-size:18px;}
-  .pb{padding:11px 4px;font-size:17px;}
-  .nd{font-size:46px;min-height:58px;}
-  .numpad{gap:8px;}
-  .nb{padding:12px;font-size:26px;}
-  .mov-btns .btn{padding:14px;font-size:17px;}
-  #sc-home,#sc-setup,#sc-final{max-width:760px;}
+/* ===== TABLET YATAY: aynı iki sütunlu düzen, büyük yazılar =====
+   Tablet, tarayıcı çubuklarından etkilenmeyen cihaz ekran boyutuyla tanınır (html.tablet) */
+@media (orientation:landscape){
+  html.tablet .stbl th,html.tablet .stbl td{padding:clamp(2px,1vh,6px) 2px;}
+  html.tablet .slbl{font-size:13px;width:72px;}
+  html.tablet .sph,html.tablet .stbl[data-n="5"] .sph{font-size:clamp(16px,1.9vw,19px);font-family:'DM Sans',sans-serif;}
+  html.tablet .stot,html.tablet .stbl[data-n="5"] .stot{font-size:clamp(28px,3.4vw,34px);}
+  html.tablet .sbit,html.tablet .sgap,html.tablet .ast-count{font-size:19px!important;}
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .sph{font-size:clamp(13px,1.5vw,15px);}
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .stot{font-size:25px;}
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .ab{padding:2px 8px;}
+  html.tablet .sbit,html.tablet .sgap,html.tablet .ast-count{font-size:17px;}
+  html.tablet .ab,html.tablet .stbl[data-n="5"] .ab{padding:3px 11px;font-size:16px;}
+  html.tablet .ast-wrap{gap:5px;}
+  html.tablet .rnd-hdr{gap:8px;padding:8px 10px 2px 12px;}
+  html.tablet .rbadge{font-size:17px;padding:4px 13px;}
+  html.tablet .jbadge{font-size:14px;padding:4px 11px;}
+  html.tablet .dbadge{font-size:21px;}
+  html.tablet .oyun-nm{font-size:27px;}
+  html.tablet .prog{margin:6px 10px 4px 12px;}
+  html.tablet #sc-game .gtabs{gap:8px;padding:8px 10px 6px 0;}
+  html.tablet #sc-game .gtab-btn,html.tablet #sc-game[data-lmode="last"] .gtab-btn{min-height:52px;font-size:18px;border-radius:11px;}
+  html.tablet .lv-hdr{padding:8px 14px 6px;font-size:14px;}
+  html.tablet .lv-row{padding:9px 16px 9px 14px;}
+  html.tablet .lv-row .rep-n{font-size:21px;}
+  html.tablet .lv-row .lv-v{font-size:27px;}
+  html.tablet .lv-empty{font-size:17px;}
+  html.tablet .rep{padding:6px 10px 6px 14px;}
+  html.tablet .rep-n{font-size:20px;}
+  html.tablet .rep-val{font-size:20px;}
+  html.tablet .rep-btn{padding:8px 16px;font-size:16px;}
+  html.tablet #save-wrap{padding:8px 10px!important;}
+  html.tablet #save-btn,html.tablet #rnd-reset-btn{padding:11px 10px;}
+  html.tablet #save-btn{font-size:18px;}
+  html.tablet #rnd-reset-btn{font-size:15px;}
+  html.tablet #land-view .hline{padding:8px 10px 8px 14px;}
+  html.tablet #land-view .hel{font-size:19px;min-width:52px;}
+  html.tablet #land-view .hsc,html.tablet #land-view[data-n="4"] .hsc,html.tablet #land-view[data-n="5"] .hsc{font-size:17px;}
+  html.tablet #land-view .hedt{padding:4px 10px;font-size:14px;}
+  html.tablet #edit-bar{font-size:15px;padding:6px 12px;}
+  html.tablet .msheet{max-width:840px;padding:18px 22px 20px;column-gap:20px;}
+  html.tablet .m-title{font-size:18px;}
+  html.tablet .pb{padding:11px 4px;font-size:17px;}
+  html.tablet .nd{font-size:46px;min-height:58px;}
+  html.tablet .numpad{gap:8px;}
+  html.tablet .nb{padding:12px;font-size:26px;}
+  html.tablet .mov-btns .btn{padding:14px;font-size:17px;}
+  html.tablet #sc-home,html.tablet #sc-setup,html.tablet #sc-final{max-width:760px;}
 }
 </style>
+<script>/* Tablet: cihazın kısa kenarı >= 480 CSS px ve iPhone değil */
+(function(){try{var k=Math.min(screen.width,screen.height);if(k>=480&&!/iPhone|iPod/.test(navigator.userAgent))document.documentElement.classList.add('tablet');}catch(e){}})();</script>
 </head>
 <body>
 <div class="app">
@@ -489,7 +490,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-02:30</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-02:45</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
@@ -1165,6 +1166,10 @@ function fitOyunNm(){
   while(el.scrollWidth>el.clientWidth+1&&fs>11){fs-=1;el.style.fontSize=fs+'px';}
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitOyunNm));
+// Sürüm yazısının yanında ekran ölçüsü (T = tablet olarak tanındı)
+function showVp(){var e=document.getElementById('app-ver');if(!e)return;e.dataset.v=e.dataset.v||e.textContent;e.textContent=e.dataset.v+' · '+innerWidth+'×'+innerHeight+(document.documentElement.classList.contains('tablet')?' T':'');}
+showVp();window.addEventListener('resize',showVp);
+
 
 function renderRndEntry(){
   const isOver=(G.rounds.length>=G.totalR||G.done)&&editMode===false;
