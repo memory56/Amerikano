@@ -509,6 +509,60 @@ select option{background:#1a3d29;}
   html.tablet #save-wrap{padding:clamp(3px,1vh,8px) 10px!important;}
   html.tablet #save-btn,html.tablet #rnd-reset-btn{padding:clamp(6px,1.6vh,11px) 10px;}
 }
+
+/* ===== TABLET YATAY (3): yazılar ekran boyutuyla büyür (büyük tabletlerde boşluk kalmasın) ===== */
+@media (orientation:landscape){
+  html.tablet .rnd-hdr{padding:clamp(6px,1.2vh,12px) 14px 2px;gap:clamp(8px,1.2vw,14px);}
+  html.tablet .rbadge{font-size:clamp(14px,2.4vh,20px);padding:clamp(3px,0.6vh,6px) clamp(10px,1.6vh,14px);}
+  html.tablet .jbadge,html.tablet #ver-badge{font-size:clamp(12px,2.1vh,18px);padding:clamp(3px,0.6vh,6px) clamp(9px,1.4vh,12px);}
+  html.tablet .oyun-nm{font-size:clamp(32px,6.4vh,50px);}
+  html.tablet .dbadge{font-size:clamp(28px,5.4vh,44px);}
+  html.tablet .prog{margin:clamp(4px,1vh,10px) 14px clamp(4px,1vh,8px);}
+  /* Sol tablo */
+  html.tablet .stbl th,html.tablet .stbl td{padding:clamp(1px,1.5vh,13px) 2px;}
+  html.tablet .slbl{font-size:clamp(15px,2.5vh,20px);width:clamp(70px,11vh,104px);}
+  html.tablet .sph,html.tablet .stbl[data-n="5"] .sph{font-size:clamp(17px,min(4.3vh,2.3vw),34px);}
+  html.tablet .stot,html.tablet .stbl[data-n="5"] .stot{font-size:clamp(32px,min(7.8vh,4.6vw),66px);}
+  html.tablet .sbit,html.tablet .sgap,html.tablet .ast-count{font-size:clamp(19px,min(4.4vh,2.7vw),36px)!important;}
+  html.tablet .ab,html.tablet .stbl[data-n="5"] .ab{font-size:clamp(17px,3vh,26px);padding:clamp(2px,0.5vh,5px) clamp(7px,1.6vh,14px);}
+  html.tablet .stbl[data-n="5"] .ab{padding:clamp(2px,0.5vh,5px) clamp(7px,1.1vh,11px);}
+  html.tablet .ast-wrap{gap:clamp(3px,0.8vh,8px);}
+  /* Sayı girişi / geçmiş açıkken sol tablo dar: biraz küçük */
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .sph,
+  html.tablet #sc-game:not([data-lmode="last"]) .sph{font-size:clamp(13px,min(3.4vh,1.55vw),26px);}
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .stot,
+  html.tablet #sc-game:not([data-lmode="last"]) .stot{font-size:clamp(25px,min(6vh,3vw),48px);}
+  html.tablet #sc-game:not([data-lmode="last"]) .sbit,html.tablet #sc-game:not([data-lmode="last"]) .sgap,
+  html.tablet #sc-game:not([data-lmode="last"]) .ast-count{font-size:clamp(16px,min(3.6vh,1.9vw),28px)!important;}
+  html.tablet #sc-game:not([data-lmode="last"]) .ab,
+  html.tablet #sc-game:not([data-lmode="last"]) .stbl[data-n="5"] .ab{font-size:clamp(15px,2.4vh,20px);padding:1px clamp(5px,0.8vh,8px);}
+  /* Sağ sütun */
+  html.tablet #sc-game .gtabs{padding:clamp(3px,1.2vh,12px) 12px clamp(3px,1vh,10px) 0;gap:clamp(8px,1.2vw,14px);}
+  html.tablet #sc-game .gtab-btn,html.tablet #sc-game[data-lmode="last"] .gtab-btn{min-height:clamp(40px,9.5vh,74px);font-size:clamp(18px,3.2vh,26px);}
+  html.tablet .lv-hdr{font-size:clamp(14px,2.3vh,19px);padding:clamp(3px,1vh,10px) 16px clamp(2px,0.8vh,8px);}
+  html.tablet .lv-row{padding:clamp(3px,1.6vh,14px) 18px clamp(3px,1.6vh,14px) 16px;}
+  html.tablet .lv-row .rep-n{font-size:clamp(23px,4.4vh,36px);}
+  html.tablet .lv-row .lv-v{font-size:clamp(30px,5.8vh,48px);}
+  html.tablet .lv-empty{font-size:clamp(17px,3vh,24px);}
+  html.tablet .rep{padding:clamp(1px,1vh,10px) 12px clamp(1px,1vh,10px) 16px;}
+  html.tablet .rep-n{font-size:clamp(20px,3.8vh,32px);}
+  html.tablet .rep-val{font-size:clamp(20px,3.8vh,32px);}
+  html.tablet .rep-btn{font-size:clamp(16px,2.8vh,24px);padding:clamp(4px,1.2vh,12px) clamp(16px,2.4vh,22px);}
+  html.tablet #save-wrap{padding:clamp(3px,1.2vh,12px) 12px!important;}
+  html.tablet #save-btn{font-size:clamp(18px,3.2vh,26px);padding:clamp(6px,1.8vh,16px) 10px;}
+  html.tablet #rnd-reset-btn{font-size:clamp(15px,2.6vh,22px);padding:clamp(6px,1.8vh,16px) 10px;}
+  html.tablet #land-view .hel{font-size:clamp(19px,3.4vh,28px);min-width:clamp(52px,8vh,76px);}
+  html.tablet #land-view .hsc,html.tablet #land-view[data-n="4"] .hsc,html.tablet #land-view[data-n="5"] .hsc{font-size:clamp(17px,min(3vh,1.6vw),24px);}
+  html.tablet #land-view .hline{padding:clamp(6px,1.4vh,12px) 12px clamp(6px,1.4vh,12px) 16px;}
+  html.tablet #edit-bar{font-size:clamp(15px,2.4vh,20px);}
+  /* Sayı klavyesi */
+  html.tablet .msheet{max-width:min(92vw,1100px);padding:clamp(14px,2.4vh,28px) clamp(18px,2.4vw,32px);}
+  html.tablet .m-title{font-size:clamp(18px,3vh,26px);}
+  html.tablet .pb{font-size:clamp(17px,3vh,26px);padding:clamp(8px,1.8vh,16px) 4px;}
+  html.tablet .nd{font-size:clamp(46px,9vh,72px);min-height:clamp(58px,11vh,90px);}
+  html.tablet .nb{font-size:clamp(26px,4.6vh,38px);padding:clamp(10px,2.2vh,20px);}
+  html.tablet .mov-btns .btn{font-size:clamp(17px,3vh,26px);padding:clamp(12px,2.2vh,20px);}
+}
 </style>
 <script>/* Tablet: cihazın kısa kenarı >= 480 CSS px ve iPhone değil */
 (function(){try{var k=Math.min(screen.width,screen.height);if(k>=480&&!/iPhone|iPod/.test(navigator.userAgent))document.documentElement.classList.add('tablet');}catch(e){}})();</script>
@@ -532,7 +586,7 @@ select option{background:#1a3d29;}
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-02:55</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-03:10</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
