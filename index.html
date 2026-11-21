@@ -578,15 +578,20 @@ select option{background:#1a3d29;}
     <form id="pw-form" onsubmit="event.preventDefault();signInPw();" style="display:flex;flex-direction:column;gap:10px;width:260px">
       <input id="auth-email" type="email" autocomplete="username" placeholder="E-posta" value="amerikano@memory56.app"
         style="padding:11px 12px;border-radius:8px;border:1px solid #555;background:#1b2a22;color:#fff;font-size:16px">
-      <input id="auth-pw" type="password" autocomplete="current-password" placeholder="Şifre"
-        style="padding:11px 12px;border-radius:8px;border:1px solid #555;background:#1b2a22;color:#fff;font-size:16px">
+      <div style="position:relative;display:flex">
+        <input id="auth-pw" type="password" autocomplete="current-password" placeholder="Şifre"
+          style="flex:1;width:100%;padding:11px 48px 11px 12px;border-radius:8px;border:1px solid #555;background:#1b2a22;color:#fff;font-size:16px">
+        <button type="button" id="pw-eye" aria-label="Şifreyi göster" title="Şifreyi göster"
+          onclick="var i=document.getElementById('auth-pw'),s=i.type==='password';i.type=s?'text':'password';this.textContent=s?'🙈':'👁';this.title=this.ariaLabel=s?'Şifreyi gizle':'Şifreyi göster';i.focus();"
+          style="position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:36px;background:none;border:none;color:#E8C96E;font-size:20px;cursor:pointer;touch-action:manipulation">👁</button>
+      </div>
       <button type="submit" id="pw-btn" style="background:#C9A84C;color:#1a1a1a;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer">Giriş Yap</button>
     </form>
     <div id="auth-err" style="color:#ff9b8a;font-size:13px;max-width:280px;text-align:center"></div>
 </div>
   <div id="sc-home" class="sc on">
   <div class="tb">
-    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 20.11-03:15</span></div></div>
+    <div><h1>🃏 Amerikano</h1><div class="sub">Skor Takip · <span id="app-ver" style="opacity:.6">sürüm 21.11-22:50</span></div></div>
     <button class="btn btn-g btn-sm" onclick="goSetup()">+ Yeni Oyun</button>
   </div>
 <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1">
@@ -1588,7 +1593,7 @@ renderHome(); // Önce göster
     const err=document.getElementById('auth-err');const btn=document.getElementById('pw-btn');
     if(!em||!pw){err.textContent='E-posta ve şifreyi girin';return;}
     err.textContent='';btn.disabled=true;btn.textContent='Giriş yapılıyor…';
-    _auth.signInWithEmailAndPassword(em,pw).then(()=>{document.getElementById('auth-pw').value='';})
+    _auth.signInWithEmailAndPassword(em,pw).then(()=>{const i=document.getElementById('auth-pw'),e=document.getElementById('pw-eye');i.value='';i.type='password';if(e){e.textContent='👁';e.title=e.ariaLabel='Şifreyi göster';}})
       .catch(e=>{
         const c=e&&e.code||'';
         err.textContent=(c.includes('invalid')||c.includes('wrong-password')||c.includes('user-not-found'))
